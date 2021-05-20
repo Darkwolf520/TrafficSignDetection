@@ -27,6 +27,11 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\TrafficSignDetection\Python" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="Python" />
@@ -61,15 +66,42 @@
     </task>
     <servers />
   </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/main.py</url>
-          <line>8</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+  <component name="WindowStateProjectService">
+    <state width="1515" height="210" key="GridCell.Tab.0.bottom" timestamp="1621528009684">
+      <screen x="1920" y="1" width="1536" height="832" />
+    </state>
+    <state width="1498" height="210" key="GridCell.Tab.0.bottom/1920.1.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1621522629869" />
+    <state width="1515" height="210" key="GridCell.Tab.0.bottom/1920.1.1536.832/0.0.1920.1040@1920.1.1536.832" timestamp="1621528009684" />
+    <state width="1515" height="210" key="GridCell.Tab.0.center" timestamp="1621528009683">
+      <screen x="1920" y="1" width="1536" height="832" />
+    </state>
+    <state width="1498" height="210" key="GridCell.Tab.0.center/1920.1.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1621522629868" />
+    <state width="1515" height="210" key="GridCell.Tab.0.center/1920.1.1536.832/0.0.1920.1040@1920.1.1536.832" timestamp="1621528009683" />
+    <state width="1515" height="210" key="GridCell.Tab.0.left" timestamp="1621528009683">
+      <screen x="1920" y="1" width="1536" height="832" />
+    </state>
+    <state width="1498" height="210" key="GridCell.Tab.0.left/1920.1.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1621522629868" />
+    <state width="1515" height="210" key="GridCell.Tab.0.left/1920.1.1536.832/0.0.1920.1040@1920.1.1536.832" timestamp="1621528009683" />
+    <state width="1515" height="210" key="GridCell.Tab.0.right" timestamp="1621528009684">
+      <screen x="1920" y="1" width="1536" height="832" />
+    </state>
+    <state width="1498" height="210" key="GridCell.Tab.0.right/1920.1.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1621522629868" />
+    <state width="1515" height="210" key="GridCell.Tab.0.right/1920.1.1536.832/0.0.1920.1040@1920.1.1536.832" timestamp="1621528009684" />
+    <state width="1498" height="261" key="GridCell.Tab.1.bottom" timestamp="1621519350495">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1498" height="261" key="GridCell.Tab.1.bottom/1920.1.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1621519350495" />
+    <state width="1498" height="261" key="GridCell.Tab.1.center" timestamp="1621519350495">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1498" height="261" key="GridCell.Tab.1.center/1920.1.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1621519350495" />
+    <state width="1498" height="261" key="GridCell.Tab.1.left" timestamp="1621519350495">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1498" height="261" key="GridCell.Tab.1.left/1920.1.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1621519350495" />
+    <state width="1498" height="261" key="GridCell.Tab.1.right" timestamp="1621519350495">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1498" height="261" key="GridCell.Tab.1.right/1920.1.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1621519350495" />
   </component>
 </project>
