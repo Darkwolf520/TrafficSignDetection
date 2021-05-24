@@ -19,16 +19,17 @@ class Shapes(enum.Enum):
     octagon = 5
 
 
-
-
 class Sign:
-    def __init__(self):
-        self.area = None ##coords
+    def __init__(self, area, shape, color):
+        self.area = area #coords
         self.image = None #croped img
-        self.shape= Shapes.undefined
-        self.color = Colors.undefined
+        self.shape = shape
+        self.color = color
 
     def imshow(self):
-        cv2.imshow("Sign object {0}, {1{".format(self.shape, self.color))
-        cv2.waitKey()
-        cv2.destroyAllWindows()
+        if self.image != None:
+            cv2.imshow("Sign object {0}, {1{".format(self.shape, self.color))
+            cv2.waitKey()
+            cv2.destroyAllWindows()
+        else:
+            print("Image not found")

@@ -8,7 +8,7 @@ import cv2
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
 def test_image():
-    image=cv2.imread("Test/maps_hungaria.png")
+    image=cv2.imread("Test/maps_ulloi.png")
     pre_processing=PreProcessing.PreProcessing()
     pre_processing.detect(image, is_show=True)
 
@@ -24,12 +24,11 @@ def test_video():
         t = time.time()
         ret, frame = cap.read()
         pre_processing.detect(frame)
-        print(time.time() - t)
         cv2.imshow('frame', frame)
         if cv2.waitKey(1) == ord('q'):
             break
-
-    print(time.time()-t)
+        end = time.time()
+        print("FPS: {0}, frame-execution: {1}".format(round(1/(end-t), 2), end-t))
 
 
 # Press the green button in the gutter to run the script.
