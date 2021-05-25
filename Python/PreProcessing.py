@@ -19,18 +19,13 @@ class PreProcessing:
 
         red_shapes = self.classify_and_recognise_contours(red_cnts, Colors.red)
         blue_shapes = self.classify_and_recognise_contours(blue_cnts, Colors.blue)
+        blue_circles = self.detect_circle(blue_image, is_show=is_show, test_image=image.copy())
+        blue_shapes += blue_circles
         yellow_shapes = self.classify_and_recognise_contours(yellow_cnts, Colors.yellow)
-        """
-        test_img= image.copy()
-        counter = 1
-        for item in red_shapes:
-            print("itt tartunk {0} / {1}".format(counter, len(red_shapes)))
-            self.draw_and_show_contours(item.area      , test_img)
-            counter += 1
-
-        self.imshow("red shapes", test_img)
-        print("end")
-        """
+        test_image = image.copy()
+        for o in blue_circles:
+            self.crop_image(o, test_image)
+            o.imshow()
 
     def segment_colors(self, image, is_show=False):
         red_image = self.segment_red_color(image)
@@ -54,13 +49,14 @@ class PreProcessing:
         circles = cv2.HoughCircles(image, cv2.HOUGH_GRADIENT, 1, minDist, param1=param1, param2=param2,
                                    minRadius=minRadius, maxRadius=maxRadius)
 
-        if is_show:
-            if circles is not None:
-                circles = np.uint16(np.around(circles))
-                for i in circles[0, :]:
-                    o = Sign(i, shape, color)
-                    circles_objects.append(o)
+        if circles is not None:
+            circles = np.uint16(np.around(circles))
+            for i in circles[0, :]:
+                o = Sign(i, shape, color)
+                circles_objects.append(o)
+                if is_show:
                     cv2.circle(test_image, (i[0], i[1]), i[2], (0, 255, 0), 2)
+            if is_show:
                 self.imshow("detected circles", test_image)
         return circles_objects
 
@@ -113,8 +109,17 @@ class PreProcessing:
 
         return result_array
 
-
-
+    def crop_image(self, o, image):
+        if o.shape == Shapes.square or o.shape == Shapes.triangle:
+            tmp_c = o.area
+            x, y, w, h = cv2.boundingRect(tmp_c)
+            o.image = image[y:y + h, x: x+w]
+        if o.shape == Shapes.circle:
+            h_up = int(o.area[0] - o.area[2])
+            h_bottom = int(o.area[0] + o.area[2])
+            w_left = int(o.area[1] - o.area[2])
+            w_right = int(o.area[1] + o.area[2])
+            o.image = image[w_left: w_right, h_up: h_bottom]
 
     def segment_red_color(self, image):
         color_lower = np.array([160, 50, 50])

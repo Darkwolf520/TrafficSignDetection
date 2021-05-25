@@ -22,13 +22,15 @@ class Shapes(enum.Enum):
 class Sign:
     def __init__(self, area, shape, color):
         self.area = area #coords
-        self.image = None #croped img
+        self.image = np.empty(0)
         self.shape = shape
         self.color = color
 
     def imshow(self):
-        if self.image != None:
-            cv2.imshow("Sign object {0}, {1{".format(self.shape, self.color))
+        if len(self.image.shape) != 1:
+            width, height, c = self.image.shape
+            print("Height: {0}, Width: {1}".format(height, width ))
+            cv2.imshow("Sign object {0}, {1} ".format(self.shape, self.color), self.image)
             cv2.waitKey()
             cv2.destroyAllWindows()
         else:
