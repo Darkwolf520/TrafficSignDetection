@@ -1,16 +1,34 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+import MyInputHandler
+import PreProcessing
+import time
+import cv2
 
 
-# Press the green button in the gutter to run the script.
+def test_image():
+    image = cv2.imread("test.ppm")
+    pre_processing = PreProcessing.PreProcessing()
+    pre_processing.detect(image, is_show=True)
+
+
+def test_video():
+    """
+    pre_processing.segment_colors()
+    #pre_processing.detect_circle(pre_processing.image)
+    """
+    pre_processing = PreProcessing.PreProcessing()
+    cap = cv2.VideoCapture("Test/video.mp4")
+
+    while cap.isOpened():
+        t = time.time()
+        ret, frame = cap.read()
+        pre_processing.detect(frame)
+        cv2.imshow('frame', frame)
+        if cv2.waitKey(1) == ord('q'):
+            break
+        end = time.time()
+        print("FPS: {0}, frame-execution: {1}".format(round(1/(end-t), 2), end-t))
+
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    test_image()
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
