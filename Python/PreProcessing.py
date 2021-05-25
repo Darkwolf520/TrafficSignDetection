@@ -4,13 +4,14 @@ import cv2
 import enum
 from Models import *
 
+
 class PreProcessing:
     def __init__(self):
         pass
 
     def detect(self, image, is_show=False):
         red_image, blue_image, yellow_image = self.segment_colors(image.copy(), is_show=is_show)
-        self.detecct_circle(red_image, is_show=is_show, test_image=image.copy())
+        self.detect_circle(red_image, is_show=is_show, test_image=image.copy())
 
         red_cnts = self.detect_contour(red_image)
         blue_cnts = self.detect_contour(blue_image)
@@ -42,8 +43,8 @@ class PreProcessing:
 
         return red_image, blue_image, yellow_image
 
-    def detecct_circle(self, image, is_show=False, test_image=np.empty((1,1)), color=Colors.blue, shape=Shapes.circle):
-        circles_objects=[]
+    def detect_circle(self, image, is_show=False, test_image=np.empty((1, 1)), color=Colors.blue, shape=Shapes.circle):
+        circles_objects = []
         minDist = 100
         param1 = 500  # 500
         param2 = 20  # 200 #smaller value-> more false circles
@@ -63,7 +64,7 @@ class PreProcessing:
                 self.imshow("detected circles", test_image)
         return circles_objects
 
-    def recognise_shape_from_contour(self, c, is_show=False, test_image=np.empty((1,1))):
+    def recognise_shape_from_contour(self, c, is_show=False, test_image=np.empty((1, 1))):
         shape = Shapes.undefined
         peri = cv2.arcLength(c, True)
         approx = cv2.approxPolyDP(c, 0.04 * peri, True)
@@ -85,12 +86,10 @@ class PreProcessing:
 
     def draw_contours(self, c, image):
         cv2.drawContours(image, [c], -1, (0, 255, 0), 2)
-        return  image
+        return image
 
     def detect_contour(self, image):
-
-        cnts= cv2.findContours(image, cv2.RETR_EXTERNAL,
-                         cv2.CHAIN_APPROX_SIMPLE)
+        cnts= cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         cnts = imutils.grab_contours(cnts)
         return cnts
 
