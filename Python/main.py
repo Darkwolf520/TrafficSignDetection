@@ -5,7 +5,7 @@ import cv2
 
 
 def test_image():
-    image = cv2.imread("test.ppm")
+    image = cv2.imread("Test/maps_wess.png")
     pre_processing = PreProcessing.PreProcessing()
     pre_processing.detect(image, is_show=True)
 
