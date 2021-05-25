@@ -10,6 +10,7 @@ class PreProcessing:
         pass
 
     def detect(self, image, is_show=False):
+        self.imshow("image", image)
         red_image, blue_image, yellow_image = self.segment_colors(image.copy(), is_show=is_show)
         self.detect_circle(red_image, is_show=is_show, test_image=image.copy())
 
