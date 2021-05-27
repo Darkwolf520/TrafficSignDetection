@@ -25,6 +25,9 @@ class Sign:
         self.image = np.empty(0)
         self.shape = shape
         self.color = color
+        self.coord_top_left= (0, 0)
+        self.coord_bottom_right = (0, 0)
+        self.sign_class_name = ""
 
     def imshow(self):
         if len(self.image.shape) != 1:
