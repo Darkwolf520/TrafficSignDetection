@@ -2,6 +2,7 @@ import MyInputHandler
 import PreProcessing
 import time
 import cv2
+import Models
 
 
 def test_image():
@@ -30,5 +31,7 @@ def test_video():
 
 
 if __name__ == '__main__':
-    test_image()
-
+    #test_image()
+    handler = Models.ModelHandler()
+    #handler.create_new_model()
+    handler.test_model()
