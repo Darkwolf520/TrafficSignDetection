@@ -2,15 +2,16 @@ import imutils
 import numpy as np
 import cv2
 import enum
-from Models import *
-
+from DomainModels import *
+import Models
+import time
 
 class PreProcessing:
     def __init__(self):
-        pass
+        self.modelHandler = Models.ModelHandler()
 
     def detect(self, image, is_show=False):
-        self.imshow("image", image)
+        #self.imshow("image", image)
         red_image, blue_image, yellow_image = self.segment_colors(image.copy(), is_show=is_show)
         self.detect_circle(red_image, is_show=is_show, test_image=image.copy())
 
@@ -20,13 +21,36 @@ class PreProcessing:
 
         red_shapes = self.classify_and_recognise_contours(red_cnts, Colors.red)
         blue_shapes = self.classify_and_recognise_contours(blue_cnts, Colors.blue)
+
         blue_circles = self.detect_circle(blue_image, is_show=is_show, test_image=image.copy())
         blue_shapes += blue_circles
         yellow_shapes = self.classify_and_recognise_contours(yellow_cnts, Colors.yellow)
         test_image = image.copy()
-        for o in blue_circles:
+
+
+
+        for o in blue_shapes:
             self.crop_image(o, test_image)
-            o.imshow()
+            #self.recognise_object(o)
+        for o in yellow_shapes:
+            self.crop_image(o, test_image)
+            #self.recognise_object(o)
+        for o in red_shapes:
+            self.crop_image(o, test_image)
+            #self.recognise_object(o)
+        shapes = []
+        #shapes += blue_shapes
+        shapes += red_shapes
+        #shapes += yellow_shapes
+
+        start = time.time()
+        for o in shapes:
+            self.recognise_object(o)
+
+        print("Recognision time: {0} for {1} objects".format(time.time()-start, len(shapes)))
+        result = self.show_results(shapes, image.copy())
+        return result
+
 
     def segment_colors(self, image, is_show=False):
         red_image = self.segment_red_color(image)
@@ -115,12 +139,18 @@ class PreProcessing:
             tmp_c = o.area
             x, y, w, h = cv2.boundingRect(tmp_c)
             o.image = image[y:y + h, x: x+w]
-        if o.shape == Shapes.circle:
+            o.coord_top_left = (x,y)
+            o.coord_bottom_right = (x+w, y+h)
+        elif o.shape == Shapes.circle:
             h_up = int(o.area[0] - o.area[2])
             h_bottom = int(o.area[0] + o.area[2])
             w_left = int(o.area[1] - o.area[2])
             w_right = int(o.area[1] + o.area[2])
             o.image = image[w_left: w_right, h_up: h_bottom]
+            o.coord_top_left = (h_up, w_left)
+            o.coord_bottom_right = (h_bottom, w_right)
+        else:
+            o.shape = Shapes.noise
 
     def segment_red_color(self, image):
         color_lower = np.array([160, 50, 50])
@@ -151,3 +181,36 @@ class PreProcessing:
         cv2.imshow(title, image)
         cv2.waitKey()
         cv2.destroyAllWindows()
+
+    def recognise_object(self, sign):
+        if sign.shape == Shapes.noise:
+            return -1
+        height, width, c = sign.image.shape
+        if height !=0 and width !=0:
+            sign.sign_class_name = self.modelHandler.predict(sign.image)
+        #print(class_idx)
+        #sign.imshow()
+
+    def show_results(self, objects, image):
+        for o in objects:
+            if o.coord_bottom_right == (0,0) and o.coord_bottom_right == (0,0):
+                continue
+            else:
+                if o.shape == Shapes.square or o.shape == Shapes.triangle and cv2.contourArea(o.area) > 20:
+                    cv2.rectangle(image, o.coord_top_left, o.coord_bottom_right, (0, 255, 0), thickness=1)
+                    x = o.coord_top_left[0]
+                    y = o.coord_bottom_right[1]
+                    y -= 20
+                    cv2.putText(image, o.sign_class_name, (x, y)
+                                , cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 255,0), thickness=1)
+                elif o.shape == Shapes.circle:
+                    cv2.rectangle(image, o.coord_top_left, o.coord_bottom_right, (0, 255, 0), thickness=1)
+                    x = o.coord_top_left[0]
+                    y = o.coord_bottom_right[1]
+                    y -= 20
+                    cv2.putText(image, o.sign_class_name, (x, y)
+                                , cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 255, 0), thickness=1)
+                else:
+                    continue
+
+        return image

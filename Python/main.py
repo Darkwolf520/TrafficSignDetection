@@ -2,12 +2,16 @@ import MyInputHandler
 import PreProcessing
 import time
 import cv2
+import Models
 
 
 def test_image():
-    image = cv2.imread("test.ppm")
+    image = cv2.imread("Test/maps_wess.png")
     pre_processing = PreProcessing.PreProcessing()
-    pre_processing.detect(image, is_show=True)
+    img = pre_processing.detect(image, is_show=True)
+    cv2.imshow("result", img)
+    cv2.waitKey()
+    cv2.destroyAllWindows()
 
 
 def test_video():
@@ -21,8 +25,9 @@ def test_video():
     while cap.isOpened():
         t = time.time()
         ret, frame = cap.read()
-        pre_processing.detect(frame)
+        detected_frame = pre_processing.detect(frame)
         cv2.imshow('frame', frame)
+        cv2.imshow('detected', detected_frame)
         if cv2.waitKey(1) == ord('q'):
             break
         end = time.time()
@@ -30,5 +35,4 @@ def test_video():
 
 
 if __name__ == '__main__':
-    test_image()
-
+    test_video()
