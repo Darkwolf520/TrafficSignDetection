@@ -6,50 +6,81 @@ from DomainModels import *
 import Models
 import time
 
+
+# Todo refaktorlálás értelmetlen metódusok törlése
+# Todo contours metódusok shape detection refaktorálás
+# Todo obj méretének meghatározása (ha tól kicsi, legyen zajnak értelmezett)
+# Todo obj simítással/szűréssel kísérletezés szín szegmentálás után
+# Todo obj zaj objektumokat legalább közvetlen a neurális háló átadásaa előtt szűrése (még shape detektáláskor kellene)
+# Todo párhuzamosítás, 3 szín külön párhuzamosítható (bottleneck a neurális hálónál?)
+# Todo ha párhuzamosítás színenként, akkor színenként külön metódusok
+# Todo színek szegmentálásának finomhangolása
+# Todo talált formák koordinátáiból, megatározni a szélesség és magasság arányát -> további zajszűrés
+# Todo fals obj tovább jut a zajszűrőn, külön SVM vagy új keras model egy háttér classal
+# Todo új modellek létrehozása, kísérletezés, tanítás validálással és teszteléssel
+# Todo új modellnél GPU kompatibilis architektra kutatása, készítése.
+
+
 class PreProcessing:
     def __init__(self):
         self.modelHandler = Models.ModelHandler()
 
-    def detect(self, image, is_show=False):
+    def detect(self, output_obj, is_show=False):
+
+        image = output_obj.original.copy()
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        output_obj.gray = gray.copy()
         #self.imshow("image", image)
         red_image, blue_image, yellow_image = self.segment_colors(image.copy(), is_show=is_show)
-        self.detect_circle(red_image, is_show=is_show, test_image=image.copy())
+        output_obj.red_mask = red_image.copy()
+        output_obj.blue_mask = blue_image.copy()
+        output_obj.yellow_mask = yellow_image.copy()
+
+        red_circles = self.detect_circle(red_image)
+        blue_circles = self.detect_circle(blue_image)
+        output_obj.red_circles = self.create_circle_image(image.copy(), red_circles)
+        output_obj.blue_circles = self.create_circle_image(image.copy(), blue_circles)
+
 
         red_cnts = self.detect_contour(red_image)
         blue_cnts = self.detect_contour(blue_image)
         yellow_cnts = self.detect_contour(yellow_image)
 
+        output_obj.red_contours = self.draw_contours(red_cnts, image.copy())
+        output_obj.blue_contours = self.draw_contours(blue_cnts, image.copy())
+        output_obj.yellow_contours = self.draw_contours(yellow_cnts, image.copy())
+
+
         red_shapes = self.classify_and_recognise_contours(red_cnts, Colors.red)
         blue_shapes = self.classify_and_recognise_contours(blue_cnts, Colors.blue)
-
-        blue_circles = self.detect_circle(blue_image, is_show=is_show, test_image=image.copy())
-        blue_shapes += blue_circles
         yellow_shapes = self.classify_and_recognise_contours(yellow_cnts, Colors.yellow)
+
+
+        blue_shapes += blue_circles
         test_image = image.copy()
 
 
 
         for o in blue_shapes:
             self.crop_image(o, test_image)
-            #self.recognise_object(o)
         for o in yellow_shapes:
             self.crop_image(o, test_image)
-            #self.recognise_object(o)
         for o in red_shapes:
             self.crop_image(o, test_image)
-            #self.recognise_object(o)
         shapes = []
         #shapes += blue_shapes
         shapes += red_shapes
         #shapes += yellow_shapes
+
+        output_obj.objects = shapes
 
         start = time.time()
         for o in shapes:
             self.recognise_object(o)
 
         print("Recognision time: {0} for {1} objects".format(time.time()-start, len(shapes)))
-        result = self.show_results(shapes, image.copy())
-        return result
+        output_obj.detected = self.show_results(shapes, image.copy())
+        return output_obj
 
 
     def segment_colors(self, image, is_show=False):
@@ -79,11 +110,14 @@ class PreProcessing:
             for i in circles[0, :]:
                 o = Sign(i, shape, color)
                 circles_objects.append(o)
-                if is_show:
-                    cv2.circle(test_image, (i[0], i[1]), i[2], (0, 255, 0), 2)
-            if is_show:
-                self.imshow("detected circles", test_image)
         return circles_objects
+
+    def create_circle_image(self, image, circles):
+
+        if circles is not None:
+            for circle in circles:
+                cv2.circle(image, (circle.area[0], circle.area[1]), circle.area[2], (0, 255, 0), 2)
+        return image
 
     def recognise_shape_from_contour(self, c, is_show=False, test_image=np.empty((1, 1))):
         shape = Shapes.undefined
@@ -97,16 +131,16 @@ class PreProcessing:
             shape = Shapes.octagon
         else:
             shape = Shapes.noise
-        if is_show and shape == Shapes.triangle:
-            self.draw_and_show_contours(c, test_image)
+
         return shape
 
     def draw_and_show_contours(self, c, image):
         image = self.draw_contours(c, image)
         self.imshow("contours", image)
 
-    def draw_contours(self, c, image):
-        cv2.drawContours(image, [c], -1, (0, 255, 0), 2)
+    def draw_contours(self, cnts, image):
+        for c in cnts:
+            cv2.drawContours(image, [c], -1, (0, 255, 0), 2)
         return image
 
     def detect_contour(self, image):
