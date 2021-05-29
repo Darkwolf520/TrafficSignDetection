@@ -30,7 +30,7 @@ class PreProcessing:
         image = output_obj.original.copy()
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         output_obj.gray = gray.copy()
-        #self.imshow("image", image)
+
         red_image, blue_image, yellow_image = self.segment_colors(image.copy(), is_show=is_show)
         output_obj.red_mask = red_image.copy()
         output_obj.blue_mask = blue_image.copy()
@@ -68,9 +68,9 @@ class PreProcessing:
         for o in red_shapes:
             self.crop_image(o, test_image)
         shapes = []
-        #shapes += blue_shapes
+        shapes += blue_shapes
         shapes += red_shapes
-        #shapes += yellow_shapes
+        shapes += yellow_shapes
 
         output_obj.objects = shapes
 
@@ -153,28 +153,47 @@ class PreProcessing:
 
         for c in cnts:
             shape = self.recognise_shape_from_contour(c)
-            if color == Colors.red:
-                if shape == Shapes.triangle or shape == Shapes.circle or shape == Shapes.octagon:
-                    o = Sign(c, shape, Colors.red)
-                    result_array.append(o)
-            if color == Colors.blue:
-                if shape == Shapes.square or shape == Shapes.circle:
-                    o = Sign(c, shape, Colors.blue)
-                    result_array.append(o)
-            if color == Colors.yellow:
-                if shape == Shapes.square:
-                    o = Sign(c, shape, Colors.yellow)
-                    result_array.append(o)
+            area = cv2.contourArea(c)
+            if not self.is_noise(c, shape, color):
+                if color == Colors.red:
+                    if shape == Shapes.triangle or shape == Shapes.circle or shape == Shapes.octagon:
+                        o = Sign(c, shape, Colors.red)
+                        result_array.append(o)
+                elif color == Colors.blue:
+                    if shape == Shapes.square or shape == Shapes.circle:
+                        o = Sign(c, shape, Colors.blue)
+                        result_array.append(o)
+                elif color == Colors.yellow:
+                    if shape == Shapes.square:
+                        o = Sign(c, shape, Colors.yellow)
+                        result_array.append(o)
+            else:
+                o = Sign(area, Shapes.noise, color)
+                result_array.append(o)
 
         return result_array
 
+    def is_noise(self, c, shape, color):
+        area = cv2.contourArea(c)
+        if area < 30:
+            return True
+        if color == Colors.red and shape == Shapes.square:
+            return True
+        if color == Colors.blue and (shape == Shapes.triangle or shape == Shapes.octagon):
+            return True
+        if color == Colors.yellow and (shape == Shapes.circle or shape == Shapes.triangle or shape == Shapes.octagon):
+            return True
+
+        return False
+
     def crop_image(self, o, image):
-        if o.shape == Shapes.square or o.shape == Shapes.triangle:
+        if o.shape == Shapes.triangle or o.shape == Shapes.square or o.shape == Shapes.octagon:
             tmp_c = o.area
             x, y, w, h = cv2.boundingRect(tmp_c)
             o.image = image[y:y + h, x: x+w]
             o.coord_top_left = (x,y)
             o.coord_bottom_right = (x+w, y+h)
+
         elif o.shape == Shapes.circle:
             h_up = int(o.area[0] - o.area[2])
             h_bottom = int(o.area[0] + o.area[2])
@@ -183,8 +202,10 @@ class PreProcessing:
             o.image = image[w_left: w_right, h_up: h_bottom]
             o.coord_top_left = (h_up, w_left)
             o.coord_bottom_right = (h_bottom, w_right)
+        elif o.shape == Shapes.noise:
+            pass
         else:
-            o.shape = Shapes.noise
+            raise ValueError('Should not exist here (error with shape recongision or noise detection)')
 
     def segment_red_color(self, image):
         color_lower = np.array([160, 50, 50])
@@ -217,34 +238,34 @@ class PreProcessing:
         cv2.destroyAllWindows()
 
     def recognise_object(self, sign):
-        if sign.shape == Shapes.noise:
-            return -1
-        height, width, c = sign.image.shape
-        if height !=0 and width !=0:
+        if sign.shape != Shapes.noise:
             sign.sign_class_name = self.modelHandler.predict(sign.image)
-        #print(class_idx)
-        #sign.imshow()
+            #height, width, c = sign.image.shape
+            #if height != 0 and width !=0:
+        else:
+            sign.sign_class_name = self.modelHandler.get_noise_class()
 
     def show_results(self, objects, image):
         for o in objects:
-            if o.coord_bottom_right == (0,0) and o.coord_bottom_right == (0,0):
+            if o.shape == Shapes.noise:
                 continue
             else:
-                if o.shape == Shapes.square or o.shape == Shapes.triangle and cv2.contourArea(o.area) > 20:
-                    cv2.rectangle(image, o.coord_top_left, o.coord_bottom_right, (0, 255, 0), thickness=1)
-                    x = o.coord_top_left[0]
-                    y = o.coord_bottom_right[1]
-                    y -= 20
-                    cv2.putText(image, o.sign_class_name, (x, y)
-                                , cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 255,0), thickness=1)
-                elif o.shape == Shapes.circle:
-                    cv2.rectangle(image, o.coord_top_left, o.coord_bottom_right, (0, 255, 0), thickness=1)
-                    x = o.coord_top_left[0]
-                    y = o.coord_bottom_right[1]
-                    y -= 20
-                    cv2.putText(image, o.sign_class_name, (x, y)
-                                , cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 255, 0), thickness=1)
-                else:
-                    continue
+                if o.shape == Shapes.triangle or o.shape == Shapes.square or o.shape == Shapes.octagon:
+                    image = self.draw_bb(o, image)
 
+                elif o.shape == Shapes.circle:
+                    image = self.draw_bb(o, image)
+
+                else:
+                    raise ValueError("van más shape is?")
+
+        return image
+
+    def draw_bb(self, o, image):
+        cv2.rectangle(image, o.coord_top_left, o.coord_bottom_right, (0, 255, 0), thickness=1)
+        x = o.coord_top_left[0]
+        y = o.coord_bottom_right[1]
+        y -= 20
+        cv2.putText(image, o.sign_class_name, (x, y)
+                    , cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 255, 0), thickness=1)
         return image

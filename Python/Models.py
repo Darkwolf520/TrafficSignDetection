@@ -12,25 +12,7 @@ import matplotlib.pyplot as plt
 class ModelHandler:
     def __init__(self):
         self.model = keras.models.load_model("Models/second.h5")
-
-    def predict(self, image):
-        image = cv2.resize(image, (32, 32))
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-        image = Image.fromarray(image)
-        my_image = img_to_array(image)
-
-        my_image = img_to_array(my_image)
-        my_image = my_image.reshape((1, my_image.shape[0], my_image.shape[1], my_image.shape[2]))
-        # my_image = preprocess_input(my_image)
-
-        # model.summary()
-        pred = self.model.predict(my_image)
-        class_name = self.get_class_by_id(np.argmax(pred))
-        return class_name
-
-    def get_class_by_id(self, id):
-        classes = {0: 'Speed limit (20km/h)',
+        self.classes = {0: 'Speed limit (20km/h)',
                    1: 'Speed limit (30km/h)',
                    2: 'Speed limit (50km/h)',
                    3: 'Speed limit (60km/h)',
@@ -72,9 +54,32 @@ class ModelHandler:
                    39: 'Keep left',
                    40: 'Roundabout mandatory',
                    41: 'End of no passing',
-                   42: 'End no passing veh > 3.5 tons'}
-        result_class = classes.get(id)
+                   42: 'End no passing veh > 3.5 tons',
+                   43: 'Noise'} #noise, hálózatban nincs ilyen class
+
+    def predict(self, image):
+        image = cv2.resize(image, (32, 32))
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+        image = Image.fromarray(image)
+        my_image = img_to_array(image)
+
+        my_image = img_to_array(my_image)
+        my_image = my_image.reshape((1, my_image.shape[0], my_image.shape[1], my_image.shape[2]))
+        # my_image = preprocess_input(my_image)
+
+        # model.summary()
+        pred = self.model.predict(my_image)
+        class_name = self.get_class_by_id(np.argmax(pred))
+        return class_name
+
+    def get_class_by_id(self, id):
+        result_class = self.classes.get(id)
         return result_class
+
+    def get_noise_class(self):
+        result = self.classes.get(len(self.classes)-1)
+        return result
 
     def create_new_model(self):
         physical_devices = tf.config.experimental.list_physical_devices('GPU')

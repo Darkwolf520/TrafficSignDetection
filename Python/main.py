@@ -16,9 +16,31 @@ def test_image():
 
 def test_video():
     """
-    pre_processing.segment_colors()
-    #pre_processing.detect_circle(pre_processing.image)
+
+
+
+
+
+
+    self.red_contours = np.empty((0, 0))
+    self.blue_contours = np.empty((0, 0))
+    self.yellow_contours = np.empty((0, 0))
+    self.detected = np.empty((0, 0))
+    self.objects = []
     """
+    show_original = True
+    show_gray = True
+    show_red_mask = True
+    show_blue_mask = True
+    show_yellow_mask = True
+    show_red_circles = True
+    show_blue_circles = True
+    show_red_contours = True
+    show_blue_contours = True
+    show_yellow_contours = True
+    show_result = True
+    show_objects = True
+
     pre_processing = PreProcessing.PreProcessing()
     cap = cv2.VideoCapture("Test/video.mp4")
 
@@ -28,24 +50,11 @@ def test_video():
         frame = cv2.resize(frame, (640, 480))
         output_obj = Output(frame)
         output_obj = pre_processing.detect(output_obj)
-        """
-        self.original = image
-        self.gray = np.empty((0, 0))
-        self.red_mask = np.empty((0, 0))
-        self.blue_mask = np.empty((0, 0))
-        self.yellow_mask = np.empty((0, 0))
-        self.red_circles = np.empty((0, 0))
-        self.blue_circles = np.empty((0, 0))
-        self.red_contours = np.empty((0, 0))
-        self.blue_contours = np.empty((0, 0))
-        self.yellow_contours = np.empty((0, 0))
-        self.detected = np.empty((0, 0))
-        self.objects = []
-        """
-        output_obj.show_output_frames(original=True, gray=True, red_mask=True, blue_mask=True,
-                                      yellow_mask=True, red_circles=True, blue_circles=True,
-                                      red_contours=True, blue_contours=True, yellow_contours=True,
-                                      detected=True, objects=True)
+
+        output_obj.show_output_frames(original=show_original, gray=show_gray, red_mask=show_red_mask,
+                                      blue_mask=show_blue_mask, yellow_mask=show_yellow_mask, red_circles=show_red_circles,
+                                      blue_circles=show_blue_circles, red_contours=show_red_contours, blue_contours=show_blue_contours,
+                                      yellow_contours=show_yellow_contours, detected=show_result, objects=show_objects)
 
         key = cv2.waitKey(1)
         
