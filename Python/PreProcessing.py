@@ -22,82 +22,66 @@ class PreProcessing:
     def __init__(self):
         self.modelHandler = Models.ModelHandler()
 
-    def detect(self, output_obj, is_show=False):
+    def detect(self, output_obj):
 
         image = output_obj.original.copy()
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        output_obj.gray = gray.copy()
+        shapes = []
 
-        red_image, blue_image, yellow_image = self.segment_colors(image.copy(), is_show=is_show)
-        output_obj.red_mask = red_image.copy()
-        output_obj.blue_mask = blue_image.copy()
-        output_obj.yellow_mask = yellow_image.copy()
+        #color segmentation
+        red_image = self.segment_colors(image.copy(), Colors.red)
+        blue_image = self.segment_colors(image.copy(), Colors.blue)
+        yellow_image = self.segment_colors(image.copy(), Colors.yellow)
 
-        red_circles = self.detect_circle(red_image)
-        blue_circles = self.detect_circle(blue_image)
-        output_obj.red_circles = self.create_circle_image(image.copy(), red_circles)
-        output_obj.blue_circles = self.create_circle_image(image.copy(), blue_circles)
-
-
+        #contour detection by color masks
         red_cnts = self.detect_contour(red_image)
         blue_cnts = self.detect_contour(blue_image)
         yellow_cnts = self.detect_contour(yellow_image)
 
-        output_obj.red_contours = self.draw_contours(red_cnts, image.copy())
-        output_obj.blue_contours = self.draw_contours(blue_cnts, image.copy())
-        output_obj.yellow_contours = self.draw_contours(yellow_cnts, image.copy())
+        #shape recognition
+        red_shapes = self.get_shapes_from_contours(red_cnts, Colors.red)
+        blue_shapes = self.get_shapes_from_contours(blue_cnts, Colors.blue)
+        yellow_shapes = self.get_shapes_from_contours(yellow_cnts, Colors.yellow)
 
+        #circle detection by masks
+        red_circles = self.detect_circle(red_image, Colors.red)
+        blue_circles = self.detect_circle(blue_image, Colors.blue)
 
-        red_shapes = self.classify_and_recognise_contours(red_cnts, Colors.red)
-        blue_shapes = self.classify_and_recognise_contours(blue_cnts, Colors.blue)
-        yellow_shapes = self.classify_and_recognise_contours(yellow_cnts, Colors.yellow)
-
-
-        blue_shapes += blue_circles
-        test_image = image.copy()
-
-
-
-        for o in blue_shapes:
-            self.crop_image(o, test_image)
-        for o in yellow_shapes:
-            self.crop_image(o, test_image)
-        for o in red_shapes:
-            self.crop_image(o, test_image)
-        shapes = []
-        shapes += blue_shapes
+        shapes += red_circles
+        shapes += blue_circles
         shapes += red_shapes
+        shapes += blue_shapes
         shapes += yellow_shapes
 
-        output_obj.objects = shapes
+        for o in shapes:
+            self.crop_image(o, image.copy())
 
         start = time.time()
         for o in shapes:
             self.recognise_object(o)
+        print("Recognision time: {0}".format(time.time()-start))
 
-        print("Recognision time: {0} for {1} objects".format(time.time()-start, len(shapes)))
+        output_obj.gray = gray.copy()
+        output_obj.red_mask = red_image.copy()
+        output_obj.blue_mask = blue_image.copy()
+        output_obj.yellow_mask = yellow_image.copy()
+        output_obj.red_circles = self.create_circle_image(image.copy(), red_circles)
+        output_obj.blue_circles = self.create_circle_image(image.copy(), blue_circles)
+        output_obj.red_contours = self.draw_contours(red_cnts, image.copy())
+        output_obj.blue_contours = self.draw_contours(blue_cnts, image.copy())
+        output_obj.yellow_contours = self.draw_contours(yellow_cnts, image.copy())
+        output_obj.objects = shapes
         output_obj.detected = self.show_results(shapes, image.copy())
+
         return output_obj
 
-
-    def segment_colors(self, image, is_show=False):
-        red_image = self.segment_red_color(image)
-        blue_image = self.segment_blue_color(image)
-        yellow_image = self.segment_yellow_color(image)
-        if is_show:
-            self.imshow("red mask", red_image)
-            self.imshow("blue mask", blue_image)
-            self.imshow("yellow mask", yellow_image)
-
-        return red_image, blue_image, yellow_image
-
-    def detect_circle(self, image, is_show=False, test_image=np.empty((1, 1)), color=Colors.blue, shape=Shapes.circle):
+    def detect_circle(self, image, color):
         circles_objects = []
         minDist = 100
-        param1 = 500  # 500
-        param2 = 20  # 200 #smaller value-> more false circles
+        param1 = 500
+        param2 = 20
         minRadius = 5
-        maxRadius = 100  # 10
+        maxRadius = 100
 
         circles = cv2.HoughCircles(image, cv2.HOUGH_GRADIENT, 1, minDist, param1=param1, param2=param2,
                                    minRadius=minRadius, maxRadius=maxRadius)
@@ -105,18 +89,17 @@ class PreProcessing:
         if circles is not None:
             circles = np.uint16(np.around(circles))
             for i in circles[0, :]:
-                o = Sign(i, shape, color)
+                o = Sign(i, Shapes.circle, color)
                 circles_objects.append(o)
         return circles_objects
 
     def create_circle_image(self, image, circles):
-
         if circles is not None:
             for circle in circles:
                 cv2.circle(image, (circle.area[0], circle.area[1]), circle.area[2], (0, 255, 0), 2)
         return image
 
-    def recognise_shape_from_contour(self, c, is_show=False, test_image=np.empty((1, 1))):
+    def recognise_shape_from_contour(self, c):
         shape = Shapes.undefined
         peri = cv2.arcLength(c, True)
         approx = cv2.approxPolyDP(c, 0.04 * peri, True)
@@ -131,21 +114,17 @@ class PreProcessing:
 
         return shape
 
-    def draw_and_show_contours(self, c, image):
-        image = self.draw_contours(c, image)
-        self.imshow("contours", image)
-
     def draw_contours(self, cnts, image):
         for c in cnts:
             cv2.drawContours(image, [c], -1, (0, 255, 0), 2)
         return image
 
     def detect_contour(self, image):
-        cnts= cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        cnts = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         cnts = imutils.grab_contours(cnts)
         return cnts
 
-    def classify_and_recognise_contours(self, cnts, color):
+    def get_shapes_from_contours(self, cnts, color):
         result_array = []
 
         for c in cnts:
@@ -156,14 +135,17 @@ class PreProcessing:
                     if shape == Shapes.triangle or shape == Shapes.circle or shape == Shapes.octagon:
                         o = Sign(c, shape, Colors.red)
                         result_array.append(o)
+
                 elif color == Colors.blue:
                     if shape == Shapes.square or shape == Shapes.circle:
                         o = Sign(c, shape, Colors.blue)
                         result_array.append(o)
+
                 elif color == Colors.yellow:
                     if shape == Shapes.square:
                         o = Sign(c, shape, Colors.yellow)
                         result_array.append(o)
+
             else:
                 o = Sign(area, Shapes.noise, color)
                 result_array.append(o)
@@ -210,41 +192,36 @@ class PreProcessing:
         else:
             raise ValueError('Should not exist here (error with shape recongision or noise detection)')
 
-    def segment_red_color(self, image):
-        color_lower = np.array([160, 50, 50])
-        color_upper = np.array([180, 255, 255])
-        color_lower2 = np.array([0, 100, 20])
-        color_upper2 = np.array([10, 255, 255])
+    def segment_colors(self, image, color):
         hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-        mask = cv2.inRange(hsv_image, color_lower, color_upper)
-        mask2 = cv2.inRange(hsv_image, color_lower2, color_upper2)
-        mask = cv2.bitwise_or(mask, mask2)
-        return mask
 
-    def segment_blue_color(self, image):
-        color_lower = np.array([95, 100, 100])
-        color_upper = np.array([110, 255, 255])
-        hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-        mask = cv2.inRange(hsv_image, color_lower, color_upper)
-        return mask
+        if color == Colors.red:
+            color_lower = np.array([160, 50, 50])
+            color_upper = np.array([180, 255, 255])
+            color_lower2 = np.array([0, 100, 20])
+            color_upper2 = np.array([10, 255, 255])
+            mask = cv2.inRange(hsv_image, color_lower, color_upper)
+            mask2 = cv2.inRange(hsv_image, color_lower2, color_upper2)
+            mask = cv2.bitwise_or(mask, mask2)
+            return mask
 
-    def segment_yellow_color(self, image):
-        color_lower = np.array([20,100,100])
-        color_upper = np.array([30, 255, 255])
-        hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-        mask = cv2.inRange(hsv_image, color_lower, color_upper)
-        return mask
+        if color == Colors.blue:
+            color_lower = np.array([95, 100, 100])
+            color_upper = np.array([110, 255, 255])
+            mask = cv2.inRange(hsv_image, color_lower, color_upper)
+            return mask
 
-    def imshow(self, title, image):
-        cv2.imshow(title, image)
-        cv2.waitKey()
-        cv2.destroyAllWindows()
+        if color == Colors.yellow:
+            color_lower = np.array([20, 100, 100])
+            color_upper = np.array([30, 255, 255])
+            mask = cv2.inRange(hsv_image, color_lower, color_upper)
+            return mask
+
+        raise ValueError("Unable to segment color: {0}".format(color))
 
     def recognise_object(self, sign):
         if sign.shape != Shapes.noise:
             sign.sign_class_name = self.modelHandler.predict(sign.image)
-            #height, width, c = sign.image.shape
-            #if height != 0 and width !=0:
         else:
             sign.sign_class_name = self.modelHandler.get_noise_class()
 
@@ -267,8 +244,12 @@ class PreProcessing:
     def draw_bb(self, o, image):
         cv2.rectangle(image, o.coord_top_left, o.coord_bottom_right, (0, 255, 0), thickness=1)
         x = o.coord_top_left[0]
-        y = o.coord_bottom_right[1]
-        y -= 20
+        y = o.coord_top_left[1] - 2
         cv2.putText(image, o.sign_class_name, (x, y)
                     , cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 255, 0), thickness=1)
         return image
+
+    def imshow(self, title, image):
+        cv2.imshow(title, image)
+        cv2.waitKey()
+        cv2.destroyAllWindows()
