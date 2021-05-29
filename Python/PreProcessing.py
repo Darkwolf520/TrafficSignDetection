@@ -9,13 +9,10 @@ import time
 
 # Todo refaktorlálás értelmetlen metódusok törlése
 # Todo contours metódusok shape detection refaktorálás
-# Todo obj méretének meghatározása (ha tól kicsi, legyen zajnak értelmezett)
 # Todo obj simítással/szűréssel kísérletezés szín szegmentálás után
-# Todo obj zaj objektumokat legalább közvetlen a neurális háló átadásaa előtt szűrése (még shape detektáláskor kellene)
 # Todo párhuzamosítás, 3 szín külön párhuzamosítható (bottleneck a neurális hálónál?)
 # Todo ha párhuzamosítás színenként, akkor színenként külön metódusok
 # Todo színek szegmentálásának finomhangolása
-# Todo talált formák koordinátáiból, megatározni a szélesség és magasság arányát -> további zajszűrés
 # Todo fals obj tovább jut a zajszűrőn, külön SVM vagy új keras model egy háttér classal
 # Todo új modellek létrehozása, kísérletezés, tanítás validálással és teszteléssel
 # Todo új modellnél GPU kompatibilis architektra kutatása, készítése.
@@ -174,6 +171,8 @@ class PreProcessing:
         return result_array
 
     def is_noise(self, c, shape, color):
+        ratio = 0.75
+        x, y, w, h = cv2.boundingRect(c)
         area = cv2.contourArea(c)
         if area < 30:
             return True
@@ -182,6 +181,10 @@ class PreProcessing:
         if color == Colors.blue and (shape == Shapes.triangle or shape == Shapes.octagon):
             return True
         if color == Colors.yellow and (shape == Shapes.circle or shape == Shapes.triangle or shape == Shapes.octagon):
+            return True
+        if w > h and h/w < ratio:
+            return True
+        if h > w and w/h < ratio:
             return True
 
         return False
