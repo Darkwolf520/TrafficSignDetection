@@ -111,13 +111,16 @@ def compare_running_times(resolution= (0, 0)):
     #első futás, nem számít
     test_video(resolution=resolution, multithreading=False)
     # test
-    start = time.time()
+    m_start = time.time()
     test_video(resolution=resolution, multithreading=False)
-    print("Single thread: {0}".format(time.time() - start))
+    m_end = time.time()
 
     start = time.time()
     test_video(resolution=resolution, multithreading=True)
-    print("Multithreading: {0}".format(time.time() - start))
+    end= time.time()
+    print("Single thread: {0}".format(end - start))
+    print("Multithreading: {0}".format(m_end - m_start))
+
 
 
 if __name__ == '__main__':

@@ -22,7 +22,6 @@ class PreProcessing:
         self.modelHandler = Models.ModelHandler()
 
     def detect(self, output_obj):
-
         image = output_obj.original.copy()
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         shapes = []
@@ -75,7 +74,6 @@ class PreProcessing:
         return output_obj
 
     def multithreading_detection(self, output_obj):
-        shapes = []
         image = output_obj.original.copy()
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         shapes = []
@@ -91,18 +89,16 @@ class PreProcessing:
         shapes += r2
         shapes += r3
 
+        start = time.time()
         for o in shapes:
             self.recognise_object(o)
+        print("Recognision time: {0}".format(time.time() - start))
 
         output_obj.gray = gray
         output_obj.objects = shapes
         output_obj.detected = self.show_results(shapes, image.copy())
 
         return output_obj
-
-
-
-
 
     def detect_with_thread(self, image, output_obj, color):
         circles = []
