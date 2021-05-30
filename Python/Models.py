@@ -58,6 +58,10 @@ class ModelHandler:
                    43: 'Noise'} #noise, hálózatban nincs ilyen class
 
     def predict(self, image):
+        h, w, c = image.shape
+        if h == 0 or w == 0:
+            print("SIZE PROBLEM: height: {0}, width: {1}".format(h, w))
+            return self.get_noise_class()
         image = cv2.resize(image, (32, 32))
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 

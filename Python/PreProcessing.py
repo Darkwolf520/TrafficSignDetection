@@ -1,10 +1,9 @@
 import imutils
 import numpy as np
-import cv2
-import enum
 from DomainModels import *
 import Models
 import time
+from concurrent.futures import ThreadPoolExecutor
 
 
 # Todo refaktorlálás értelmetlen metódusok törlése
@@ -74,6 +73,65 @@ class PreProcessing:
         output_obj.detected = self.show_results(shapes, image.copy())
 
         return output_obj
+
+    def multithreading_detection(self, output_obj):
+        shapes = []
+        image = output_obj.original.copy()
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        shapes = []
+
+        ex1 = ThreadPoolExecutor().submit(self.detect_with_thread, image.copy(), output_obj, Colors.red)
+        ex2 = ThreadPoolExecutor().submit(self.detect_with_thread, image.copy(), output_obj, Colors.blue)
+        ex3 = ThreadPoolExecutor().submit(self.detect_with_thread, image.copy(), output_obj, Colors.yellow)
+        r1 = ex1.result()
+        r2 = ex2.result()
+        r3 = ex3.result()
+
+        shapes += r1
+        shapes += r2
+        shapes += r3
+
+        for o in shapes:
+            self.recognise_object(o)
+
+        output_obj.gray = gray
+        output_obj.objects = shapes
+        output_obj.detected = self.show_results(shapes, image.copy())
+
+        return output_obj
+
+
+
+
+
+    def detect_with_thread(self, image, output_obj, color):
+        circles = []
+
+        color_mask = self.segment_colors(image.copy(), color)
+        cnts = self.detect_contour(color_mask)
+        color_shapes = self.get_shapes_from_contours(cnts, color)
+        if color == Colors.red or color == Colors.blue:
+            circles = self.detect_circle(color_mask.copy(), color)
+            color_shapes += circles
+
+        for o in color_shapes:
+            self.crop_image(o, image.copy())
+
+        if color == Colors.red:
+            output_obj.red_mask = color_mask
+            output_obj.red_circles = self.create_circle_image(image.copy(), circles)
+            output_obj.red_contours = self.draw_contours(cnts, image.copy())
+
+        if color == Colors.blue:
+            output_obj.blue_mask = color_mask
+            output_obj.blue_circles = self.create_circle_image(image.copy(), circles)
+            output_obj.blue_contours = self.draw_contours(cnts, image.copy())
+
+        if color == Colors.yellow:
+            output_obj.yellow_mask = color_mask
+            output_obj.yellow_contours = self.draw_contours(cnts, image.copy())
+
+        return color_shapes
 
     def detect_circle(self, image, color):
         circles_objects = []
