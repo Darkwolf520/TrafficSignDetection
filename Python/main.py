@@ -1,4 +1,3 @@
-import MyInputHandler
 import PreProcessing
 import time
 import cv2
@@ -55,7 +54,9 @@ def test_video(resolution=(0, 0), multithreading=False):
 
     pre_processing = PreProcessing.PreProcessing()
     cap = cv2.VideoCapture("Test/video.mp4")
-
+    bbox = (0, 0, 0, 0)
+    tracking = False
+    tracker = cv2.TrackerCSRT_create()
     while cap.isOpened():
         ret, frame = cap.read()
         if ret:
@@ -68,14 +69,6 @@ def test_video(resolution=(0, 0), multithreading=False):
             else:
                 output_obj = pre_processing.detect(output_obj)
 
-                output_obj.show_output_frames(original=show_original, gray=show_gray, red_mask=show_red_mask,
-                                              blue_mask=show_blue_mask, yellow_mask=show_yellow_mask,
-                                              red_circles=show_red_circles,
-                                              blue_circles=show_blue_circles, red_contours=show_red_contours,
-                                              blue_contours=show_blue_contours,
-                                              yellow_contours=show_yellow_contours, detected=show_result,
-                                              objects=show_objects)
-
             key = cv2.waitKey(1)
             if key == ord('q'):
                 break
@@ -83,7 +76,28 @@ def test_video(resolution=(0, 0), multithreading=False):
                 print("paused")
                 cv2.waitKey()
                 print("resumed")
+            elif key == ord("t"):
+                bbox = cv2.selectROI("select roi", output_obj.original)
+                cv2.destroyWindow("select roi")
+                if bbox[2] > 5 and bbox[3] > 5:
+                    tracker = cv2.TrackerCSRT_create()
+                    tracker.init(output_obj.original, bbox)
+                    tracking = True
 
+            if tracking:
+                (success, bbox) = tracker.update(output_obj.original)
+                if success:
+                    output_obj.draw_tracking_obj_on_detected(bbox)
+                else:
+                    tracking = False
+
+            output_obj.show_output_frames(original=show_original, gray=show_gray, red_mask=show_red_mask,
+                                          blue_mask=show_blue_mask, yellow_mask=show_yellow_mask,
+                                          red_circles=show_red_circles,
+                                          blue_circles=show_blue_circles, red_contours=show_red_contours,
+                                          blue_contours=show_blue_contours,
+                                          yellow_contours=show_yellow_contours, detected=show_result,
+                                          objects=show_objects)
 
             end = time.time()
             print("FPS: {0}, frame-execution: {1}".format(round(1/(end-t), 2), end-t))

@@ -1,6 +1,7 @@
 import DomainModels
 import cv2
 import numpy as np
+from DomainModels import *
 
 
 class Output:
@@ -17,6 +18,19 @@ class Output:
         self.yellow_contours = np.empty((0, 0))
         self.detected = np.empty((0, 0))
         self.objects = []
+        
+    def get_not_noise_objects(self):
+        objects = []
+        for o in self.objects:
+            if o.shape != Shapes.noise:
+                objects.append(o)
+        return objects
+
+    def draw_tracking_obj_on_detected(self, bbox):
+        bbox = (int(bbox[0]), int(bbox[1]), int(bbox[2]), int(bbox[3]))
+        top_left = (bbox[0], bbox[1])
+        bottom_right = (bbox[0]+bbox[2], bbox[1]+bbox[3])
+        cv2.rectangle(self.detected, top_left, bottom_right, (0, 0, 255), 1)
 
     def show_output_frames(self, original=False, gray=False, red_mask=False,
                            blue_mask=False, yellow_mask=False, red_circles=False,

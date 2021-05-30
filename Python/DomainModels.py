@@ -29,6 +29,17 @@ class Sign:
         self.coord_bottom_right = (0, 0)
         self.sign_class_name = ""
 
+    def get_bbox(self):
+        #bbox = (x, y, width_from_coord, height_from_coord)
+        x = self.coord_top_left[0]
+        y = self.coord_top_left[1]
+
+        w = self.coord_bottom_right[0] - x
+        h = self.coord_bottom_right[1] - y
+        bbox = (x, y, w, h)
+        return bbox
+
+
     def imshow(self):
         if len(self.image.shape) != 1:
             width, height, c = self.image.shape
