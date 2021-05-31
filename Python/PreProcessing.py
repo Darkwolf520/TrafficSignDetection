@@ -20,6 +20,8 @@ from concurrent.futures import ThreadPoolExecutor
 class PreProcessing:
     def __init__(self):
         self.modelHandler = Models.ModelHandler()
+        self.up_ratio = 0.25
+        self.bottom_ratio = 0.3
 
     def detect(self, output_obj):
         image = output_obj.original.copy()
@@ -74,7 +76,9 @@ class PreProcessing:
         return output_obj
 
     def multithreading_detection(self, output_obj):
-        image = output_obj.original.copy()
+        frame = output_obj.original.copy()
+        image = self.create_roi_image(frame.copy())
+
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         shapes = []
 
@@ -84,7 +88,6 @@ class PreProcessing:
         r1 = ex1.result()
         r2 = ex2.result()
         r3 = ex3.result()
-
         shapes += r1
         shapes += r2
         shapes += r3
@@ -96,7 +99,7 @@ class PreProcessing:
 
         output_obj.gray = gray
         output_obj.objects = shapes
-        output_obj.detected = self.show_results(shapes, image.copy())
+        output_obj.detected = self.show_results(shapes, frame.copy())
 
         return output_obj
 
@@ -128,6 +131,22 @@ class PreProcessing:
             output_obj.yellow_contours = self.draw_contours(cnts, image.copy())
 
         return color_shapes
+
+    def create_roi_image(self, image):
+        h, w, c = image.shape
+        up = int(h* self.up_ratio)
+        bottom = int(h * (1-self.bottom_ratio))
+        #o.image = image[y:y + h, x: x+w]
+        """
+               image[0: up, 0:w] = 0
+        image[bottom:h, 0:w] = 0
+        
+        """
+
+        image = image[up:bottom, 0:w]
+        return image
+
+
 
     def detect_circle(self, image, color):
         circles_objects = []
@@ -296,9 +315,14 @@ class PreProcessing:
         return image
 
     def draw_bb(self, o, image):
-        cv2.rectangle(image, o.coord_top_left, o.coord_bottom_right, (0, 255, 0), thickness=1)
+        h, w, c = image.shape
+        y_dif = int( h * self.up_ratio)
         x = o.coord_top_left[0]
-        y = o.coord_top_left[1] - 2
+        y = y_dif + o.coord_top_left[1] - 2
+        x2 = o.coord_bottom_right[0]
+        y2 = y_dif + o.coord_bottom_right[1]
+        cv2.rectangle(image, (x, y), (x2, y2), (0, 255, 0), thickness=1)
+        y -= 2
         cv2.putText(image, o.sign_class_name, (x, y)
                     , cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 255, 0), thickness=1)
         return image
