@@ -1,8 +1,10 @@
 import PreProcessing
 import time
 import cv2
+import numpy as np
 import Models
 from OutputHandler import Output
+from mss import mss
 
 show_original = True
 show_gray = False
@@ -117,13 +119,48 @@ def compare_running_times(resolution= (0, 0)):
     print("Single thread: {0}".format(end - start))
     print("Multithreading: {0}".format(m_end - m_start))
 
+def testing_with_second_monitor(resolution= (0, 0)):
+    pre_processing = PreProcessing.PreProcessing()
+    sct = mss()
+    mon = sct.monitors[0]
+    mon = {'left':0,
+           'top':0,
+           'width': 1920,
+           'height':1080}
+    while True:
+        img = sct.grab(mon)
+        img = cv2.cvtColor(np.array(img), cv2.COLOR_BGRA2BGR)
+        if resolution != (0, 0):
+            img = cv2.resize(img, resolution)
 
+        t = time.time()
+        output_obj = Output(img)
+        output_obj = pre_processing.multithreading_detection(output_obj)
+
+        output_obj.show_output_frames(original=show_original, gray=show_gray, red_mask=show_red_mask,
+                                      blue_mask=show_blue_mask, yellow_mask=show_yellow_mask,
+                                      red_mask_filter=show_red_mask_filter,
+                                      blue_mask_filter=show_blue_mask_filter,
+                                      yellow_mask_filter=show_yellow_mask_filter,
+                                      red_circles=show_red_circles,
+                                      blue_circles=show_blue_circles, red_contours=show_red_contours,
+                                      blue_contours=show_blue_contours,
+                                      yellow_contours=show_yellow_contours, detected=show_result,
+                                      objects=show_objects)
+        end = time.time()
+        print("FPS: {0}, frame-execution: {1}".format(round(1 / (end - t), 2), end - t))
+
+        key = cv2.waitKey(1)
+        if key == ord("q"):
+            cv2.destroyAllWindows()
+            break
 
 if __name__ == '__main__':
     resolution = (640, 480)
 
     #test_image(resolution=resolution)
-    test_video(resolution=resolution)
+    #test_video(resolution=resolution)
+    testing_with_second_monitor(resolution=resolution)
     """
     test_video(resolution=resolution, multithreading=True)
     start = time.time()
