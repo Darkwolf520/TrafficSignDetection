@@ -11,6 +11,9 @@ class Output:
         self.red_mask = np.empty((0, 0))
         self.blue_mask = np.empty((0, 0))
         self.yellow_mask = np.empty((0, 0))
+        self.red_mask_filter = np.empty((0, 0))
+        self.blue_mask_filter = np.empty((0, 0))
+        self.yellow_mask_filter = np.empty((0, 0))
         self.red_circles = np.empty((0, 0))
         self.blue_circles = np.empty((0, 0))
         self.red_contours = np.empty((0, 0))
@@ -26,6 +29,13 @@ class Output:
                 objects.append(o)
         return objects
 
+    def get_color_objects(self, color):
+        objects=[]
+        for o in self.objects:
+            if o.color == color:
+                objects.append(o)
+        return objects
+
     def draw_tracking_obj_on_detected(self, bbox):
         bbox = (int(bbox[0]), int(bbox[1]), int(bbox[2]), int(bbox[3]))
         top_left = (bbox[0], bbox[1])
@@ -34,6 +44,7 @@ class Output:
 
     def show_output_frames(self, original=False, gray=False, red_mask=False,
                            blue_mask=False, yellow_mask=False, red_circles=False,
+                           red_mask_filter=False, blue_mask_filter=False, yellow_mask_filter=False,
                            blue_circles=False, red_contours=False, blue_contours=False,
                            yellow_contours=False, detected=False, objects=False):
         if original:
@@ -46,6 +57,12 @@ class Output:
             cv2.imshow("blue mask", self.blue_mask)
         if yellow_mask:
             cv2.imshow("yellow mask", self.yellow_mask)
+        if red_mask_filter:
+            cv2.imshow("red mask filtered", self.red_mask_filter)
+        if blue_mask_filter:
+            cv2.imshow("blue mask filtered", self.blue_mask_filter)
+        if yellow_mask_filter:
+            cv2.imshow("yellow mask filtered", self.yellow_mask_filter)
         if red_circles:
             cv2.imshow("red circles", self.red_circles)
         if blue_circles:
@@ -59,6 +76,8 @@ class Output:
         if detected:
             cv2.imshow("detected objects", self.detected)
         if objects:
-            pass #Todo normális logolás helye
+            print("Red objects: {0}, Blue objects: {1}, Yellow objects {2}, All sign object: {3}"
+                  .format(len(self.get_color_objects(Colors.red)), len(self.get_color_objects(Colors.blue)),
+                          len(self.get_color_objects(Colors.yellow)), len(self.get_not_noise_objects())))
 
 

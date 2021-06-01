@@ -4,23 +4,24 @@ import cv2
 import Models
 from OutputHandler import Output
 
+show_original = True
+show_gray = False
+show_red_mask = True
+show_blue_mask = True
+show_yellow_mask = True
+show_red_mask_filter = False
+show_blue_mask_filter = False
+show_yellow_mask_filter = False
+show_red_circles = False
+show_blue_circles = False
+show_red_contours = False
+show_blue_contours = False
+show_yellow_contours = False
+show_result = True
+show_objects = True
 
 def test_image(resolution = (0, 0)):
-    show_original = True
-    show_gray = False
-    show_red_mask = False
-    show_blue_mask = False
-    show_yellow_mask = False
-    show_red_circles = False
-    show_blue_circles = False
-    show_red_contours = False
-    show_blue_contours = False
-    show_yellow_contours = False
-    show_result = True
-    show_objects = True
-
-
-    image = cv2.imread("Test/maps_wess.png")
+    image = cv2.imread("Test/maps_istvan.png")
     if resolution != (0, 0):
         image = cv2.resize(image, resolution)
     output_obj = Output(image)
@@ -29,28 +30,20 @@ def test_image(resolution = (0, 0)):
     output_obj = pre_processing.multithreading_detection(output_obj)
 
     output_obj.show_output_frames(original=show_original, gray=show_gray, red_mask=show_red_mask,
-                                  blue_mask=show_blue_mask, yellow_mask=show_yellow_mask, red_circles=show_red_circles,
+                                  blue_mask=show_blue_mask, yellow_mask=show_yellow_mask,
+                                  red_mask_filter=show_red_mask_filter,
+                                  blue_mask_filter=show_blue_mask_filter,
+                                  yellow_mask_filter=show_yellow_mask_filter,
+                                  red_circles=show_red_circles,
                                   blue_circles=show_blue_circles, red_contours=show_red_contours,
                                   blue_contours=show_blue_contours,
-                                  yellow_contours=show_yellow_contours, detected=show_result, objects=show_objects)
+                                  yellow_contours=show_yellow_contours, detected=show_result,
+                                  objects=show_objects)
     cv2.waitKey()
     cv2.destroyAllWindows()
 
 
-def test_video(resolution=(0, 0), multithreading=False):
-    show_original = True
-    show_gray = True
-    show_red_mask = True
-    show_blue_mask = True
-    show_yellow_mask = True
-    show_red_circles = True
-    show_blue_circles = True
-    show_red_contours = True
-    show_blue_contours = True
-    show_yellow_contours = True
-    show_result = True
-    show_objects = True
-
+def test_video(resolution=(0, 0), multithreading=True):
 
     pre_processing = PreProcessing.PreProcessing()
     cap = cv2.VideoCapture("Test/video.mp4")
@@ -93,6 +86,9 @@ def test_video(resolution=(0, 0), multithreading=False):
 
             output_obj.show_output_frames(original=show_original, gray=show_gray, red_mask=show_red_mask,
                                           blue_mask=show_blue_mask, yellow_mask=show_yellow_mask,
+                                          red_mask_filter=show_red_mask_filter,
+                                          blue_mask_filter=show_blue_mask_filter,
+                                          yellow_mask_filter=show_yellow_mask_filter,
                                           red_circles=show_red_circles,
                                           blue_circles=show_blue_circles, red_contours=show_red_contours,
                                           blue_contours=show_blue_contours,
@@ -125,9 +121,17 @@ def compare_running_times(resolution= (0, 0)):
 
 if __name__ == '__main__':
     resolution = (640, 480)
-    #test_image(resolution=resolution)
-    test_video(resolution=resolution, multithreading=True)
 
+    #test_image(resolution=resolution)
+    test_video(resolution=resolution)
+    """
+    test_video(resolution=resolution, multithreading=True)
+    start = time.time()
+    test_video(resolution=resolution, multithreading=True)
+    end = time.time()
+    print(end-start)
+    
+    """
     """
     #3szor fut le, első futási eredményt nem jelenítem meg, eredmények a 3. futás végén jelenítődnek meg
     compare_running_times(resolution=resolution)

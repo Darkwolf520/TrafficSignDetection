@@ -22,6 +22,7 @@ class PreProcessing:
         self.modelHandler = Models.ModelHandler()
         self.up_ratio = 0.25
         self.bottom_ratio = 0.3
+        self.apply_roi = True
 
     def detect(self, output_obj):
         image = output_obj.original.copy()
@@ -77,7 +78,11 @@ class PreProcessing:
 
     def multithreading_detection(self, output_obj):
         frame = output_obj.original.copy()
-        image = self.create_roi_image(frame.copy())
+
+        #image = self.create_roi_image(frame.copy())
+        image = frame.copy()
+        if self.apply_roi:
+            image = self.create_roi_image(frame.copy())
 
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         shapes = []
@@ -105,8 +110,10 @@ class PreProcessing:
 
     def detect_with_thread(self, image, output_obj, color):
         circles = []
-
-        color_mask = self.segment_colors(image.copy(), color)
+        image_orig = image.copy()
+        image = cv2.bilateralFilter(image, 3, 10, 10)
+        color_mask_orig = self.segment_colors(image.copy(), color)
+        color_mask = self.filter_mask(color_mask_orig.copy())
         cnts = self.detect_contour(color_mask)
         color_shapes = self.get_shapes_from_contours(cnts, color)
         if color == Colors.red or color == Colors.blue:
@@ -114,20 +121,23 @@ class PreProcessing:
             color_shapes += circles
 
         for o in color_shapes:
-            self.crop_image(o, image.copy())
+            self.crop_image(o, image_orig)
 
         if color == Colors.red:
-            output_obj.red_mask = color_mask
+            output_obj.red_mask = color_mask_orig
+            output_obj.red_mask_filter = color_mask
             output_obj.red_circles = self.create_circle_image(image.copy(), circles)
             output_obj.red_contours = self.draw_contours(cnts, image.copy())
 
         if color == Colors.blue:
-            output_obj.blue_mask = color_mask
+            output_obj.blue_mask = color_mask_orig
+            output_obj.blue_mask_filter = color_mask
             output_obj.blue_circles = self.create_circle_image(image.copy(), circles)
             output_obj.blue_contours = self.draw_contours(cnts, image.copy())
 
         if color == Colors.yellow:
-            output_obj.yellow_mask = color_mask
+            output_obj.yellow_mask = color_mask_orig
+            output_obj.yellow_mask_filter = color_mask
             output_obj.yellow_contours = self.draw_contours(cnts, image.copy())
 
         return color_shapes
@@ -267,11 +277,10 @@ class PreProcessing:
 
     def segment_colors(self, image, color):
         hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-
         if color == Colors.red:
             color_lower = np.array([160, 50, 50])
             color_upper = np.array([180, 255, 255])
-            color_lower2 = np.array([0, 100, 20])
+            color_lower2 = np.array([0, 100, 50])
             color_upper2 = np.array([10, 255, 255])
             mask = cv2.inRange(hsv_image, color_lower, color_upper)
             mask2 = cv2.inRange(hsv_image, color_lower2, color_upper2)
@@ -285,12 +294,17 @@ class PreProcessing:
             return mask
 
         if color == Colors.yellow:
-            color_lower = np.array([20, 100, 100])
+            color_lower = np.array([10, 120, 120])
             color_upper = np.array([30, 255, 255])
             mask = cv2.inRange(hsv_image, color_lower, color_upper)
             return mask
 
         raise ValueError("Unable to segment color: {0}".format(color))
+
+    def filter_mask(self, image):
+        kernel = np.ones((5, 5), np.uint8)
+        image = cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernel) #opening nem vált be
+        return image
 
     def recognise_object(self, sign):
         if sign.shape != Shapes.noise:
@@ -316,15 +330,22 @@ class PreProcessing:
 
     def draw_bb(self, o, image):
         h, w, c = image.shape
-        y_dif = int( h * self.up_ratio)
-        x = o.coord_top_left[0]
-        y = y_dif + o.coord_top_left[1] - 2
-        x2 = o.coord_bottom_right[0]
-        y2 = y_dif + o.coord_bottom_right[1]
-        cv2.rectangle(image, (x, y), (x2, y2), (0, 255, 0), thickness=1)
-        y -= 2
-        cv2.putText(image, o.sign_class_name, (x, y)
-                    , cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 255, 0), thickness=1)
+        if self.apply_roi:
+            y_dif = int( h * self.up_ratio)
+            x = o.coord_top_left[0]
+            y = y_dif + o.coord_top_left[1] - 2
+            x2 = o.coord_bottom_right[0]
+            y2 = y_dif + o.coord_bottom_right[1]
+            cv2.rectangle(image, (x, y), (x2, y2), (0, 255, 0), thickness=1)
+            y -= 2
+            cv2.putText(image, o.sign_class_name, (x, y)
+                        , cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 255, 0), thickness=1)
+        else:
+            cv2.rectangle(image, o.coord_top_left, o.coord_bottom_right, (0, 255, 0), thickness=1)
+            x = o.coord_top_left[0]
+            y = o.coord_top_left[1] - 2
+            cv2.putText(image, o.sign_class_name, (x, y)
+                        , cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 255, 0), thickness=1)
         return image
 
     def imshow(self, title, image):
