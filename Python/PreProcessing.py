@@ -6,11 +6,9 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 
 
-# Todo refaktorlálás értelmetlen metódusok törlése
-# Todo contours metódusok shape detection refaktorálás
+
+
 # Todo obj simítással/szűréssel kísérletezés szín szegmentálás után
-# Todo párhuzamosítás, 3 szín külön párhuzamosítható (bottleneck a neurális hálónál?)
-# Todo ha párhuzamosítás színenként, akkor színenként külön metódusok
 # Todo színek szegmentálásának finomhangolása
 # Todo fals obj tovább jut a zajszűrőn, külön SVM vagy új keras model egy háttér classal
 # Todo új modellek létrehozása, kísérletezés, tanítás validálással és teszteléssel
@@ -79,7 +77,6 @@ class PreProcessing:
     def multithreading_detection(self, output_obj):
         frame = output_obj.original.copy()
 
-        #image = self.create_roi_image(frame.copy())
         image = frame.copy()
         if self.apply_roi:
             image = self.create_roi_image(frame.copy())

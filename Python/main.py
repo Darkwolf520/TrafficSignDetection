@@ -155,21 +155,91 @@ def testing_with_second_monitor(resolution= (0, 0)):
             cv2.destroyAllWindows()
             break
 
-if __name__ == '__main__':
-    resolution = (640, 480)
 
-    #test_image(resolution=resolution)
+def testing_CSRT(tracker, video_path, bbox):
+    tracker = cv2.TrackerCSRT_create()
+    cap = cv2.VideoCapture(video_path)
+    tracker = cv2.TrackerCSRT_create()
+    i = 0
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if ret:
+            start = time.time()
+            if i == 0:
+                tracker.init(frame, bbox)
+
+            else:
+                (success, bbox) = tracker.update(frame)
+
+                if success:
+                    frame = draw_tracking_obj_on_detected(frame.copy(), bbox)
+                else:
+                    print("Tracked frames: {0}".format(i))
+            cv2.imshow("frame", frame)
+            cv2.waitKey(1)
+            end = time.time()
+            fps = round(1 / (end - start))
+            print("processing time: {0}".format(fps))
+            i = i + 1
+        else:
+            break
+    cap.release()
+
+def draw_tracking_obj_on_detected(image, bbox):
+    bbox = (int(bbox[0]), int(bbox[1]), int(bbox[2]), int(bbox[3]))
+    top_left = (bbox[0], bbox[1])
+    bottom_right = (bbox[0]+bbox[2], bbox[1]+bbox[3])
+    cv2.rectangle(image, top_left, bottom_right, (0, 0, 255), 1)
+    return image
+def test_select_ROI(video_path):
+    bbox = 0
+    cap = cv2.VideoCapture(video_path)
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if ret:
+            if bbox == 0 :
+                bbox = cv2.selectROI("select roi", frame)
+                cv2.destroyWindow("select roi")
+                print(bbox)
+                break
+            cv2.imshow("frame", frame)
+            cv2.waitKey()
+            cv2.destroyAllWindows()
+
+if __name__ == '__main__':
+    resolution = (1360, 800)
+
+
+#01 (153, 367, 32, 30) kisebb
+#01 (149, 364, 41, 38) nagyobb
+#02 (727, 415, 25, 23) kisebb
+#02 (724, 411, 30, 28) nagyobb
+#03 (771, 448, 18, 23) kisebb
+#03 (765, 444, 30, 30) nagyobb
+#04 (737, 391, 31, 30) kidebb
+#04 (732, 385, 40, 40) nagyobb
+#05 (760, 485, 23, 30) kisebb
+#05 (759, 482, 26, 34) nagyobb
+#06 (717, 433, 35, 31) kisebb park
+#06 (712, 431, 43, 38) nagyobb park
+#06 (712, 407, 36, 29) kisebb egyirany
+#06 (707, 401, 48, 40) nagyobb park
+
+    testing_CSRT(cv2.TrackerCSRT_create(), "../Assets/01.mp4", (153, 367, 32, 30))
+    testing_CSRT(cv2.TrackerKCF_create(), "../Assets/01.mp4", (153, 367, 32, 30))
+    testing_CSRT(cv2.TrackerMOSSE_create(), "../Assets/01.mp4", (153, 367, 32, 30))
+
+"""
+    test_image(resolution=resolution)
     #test_video(resolution=resolution)
-    testing_with_second_monitor(resolution=resolution)
-    """
+    #testing_with_second_monitor(resolution=resolution)
+    
     test_video(resolution=resolution, multithreading=True)
     start = time.time()
     test_video(resolution=resolution, multithreading=True)
     end = time.time()
     print(end-start)
     
-    """
-    """
     #3szor fut le, első futási eredményt nem jelenítem meg, eredmények a 3. futás végén jelenítődnek meg
     compare_running_times(resolution=resolution)
     """
