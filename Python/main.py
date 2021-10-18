@@ -321,6 +321,16 @@ if __name__ == '__main__':
 test_video(resolution=resolution, slowmo=1, isTracking=False, video="../Assets/SH5.mp4")
 #test_image(resolution=resolution, img_path="../Assets/SH6.png", saveResult=True)
 
+#handler = Models.ModelHandler(createNewModel=True)
+#handler.create_model4("MobileNetV2")
+#handler.train_model("MobileNetV2")
+
+"""
+
+
+"""
+
+
 """
 
 #test_select_ROI(resolution=resolution, image_path="Test/maps_istvan.png")

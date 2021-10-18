@@ -1,7 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7e13e003-3192-4ae8-a8a7-d9f7e4384e79" name="Default Changelist" comment="" />
+    <list default="true" id="7e13e003-3192-4ae8-a8a7-d9f7e4384e79" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Models.py" beforeDir="false" afterPath="$PROJECT_DIR$/Models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Models/MobileNetV2.h5" beforeDir="false" afterPath="$PROJECT_DIR$/Models/MobileNetV2.h5" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Models/first.h5" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Models/logs/second/train/events.out.tfevents.1622115679.DESKTOP-9MNFRV1.13100.201.v2" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Models/logs/second/train/events.out.tfevents.1622115704.DESKTOP-9MNFRV1.profile-empty" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Models/logs/second/train/plugins/profile/2021_05_27_11_41_44/DESKTOP-9MNFRV1.input_pipeline.pb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Models/logs/second/train/plugins/profile/2021_05_27_11_41_44/DESKTOP-9MNFRV1.kernel_stats.pb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Models/logs/second/train/plugins/profile/2021_05_27_11_41_44/DESKTOP-9MNFRV1.memory_profile.json.gz" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Models/logs/second/train/plugins/profile/2021_05_27_11_41_44/DESKTOP-9MNFRV1.overview_page.pb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Models/logs/second/train/plugins/profile/2021_05_27_11_41_44/DESKTOP-9MNFRV1.tensorflow_stats.pb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Models/logs/second/train/plugins/profile/2021_05_27_11_41_44/DESKTOP-9MNFRV1.trace.json.gz" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Models/logs/second/train/plugins/profile/2021_05_27_11_41_44/DESKTOP-9MNFRV1.xplane.pb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Models/second.h5" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -67,41 +83,21 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state width="1515" height="210" key="GridCell.Tab.0.bottom" timestamp="1621530884166">
-      <screen x="1920" y="1" width="1536" height="832" />
+    <state width="1515" height="208" key="GridCell.Tab.0.bottom" timestamp="1634592862398">
+      <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1498" height="210" key="GridCell.Tab.0.bottom/1920.1.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1621522629869" />
-    <state width="1515" height="210" key="GridCell.Tab.0.bottom/1920.1.1536.832/0.0.1920.1040@1920.1.1536.832" timestamp="1621530884166" />
-    <state width="1515" height="210" key="GridCell.Tab.0.center" timestamp="1621530884166">
-      <screen x="1920" y="1" width="1536" height="832" />
+    <state width="1515" height="208" key="GridCell.Tab.0.bottom/0.0.1536.824/-1920.0.1920.1040@0.0.1536.824" timestamp="1634592862398" />
+    <state width="1515" height="208" key="GridCell.Tab.0.center" timestamp="1634592862398">
+      <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1498" height="210" key="GridCell.Tab.0.center/1920.1.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1621522629868" />
-    <state width="1515" height="210" key="GridCell.Tab.0.center/1920.1.1536.832/0.0.1920.1040@1920.1.1536.832" timestamp="1621530884166" />
-    <state width="1515" height="210" key="GridCell.Tab.0.left" timestamp="1621530884166">
-      <screen x="1920" y="1" width="1536" height="832" />
+    <state width="1515" height="208" key="GridCell.Tab.0.center/0.0.1536.824/-1920.0.1920.1040@0.0.1536.824" timestamp="1634592862398" />
+    <state width="1515" height="208" key="GridCell.Tab.0.left" timestamp="1634592862398">
+      <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1498" height="210" key="GridCell.Tab.0.left/1920.1.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1621522629868" />
-    <state width="1515" height="210" key="GridCell.Tab.0.left/1920.1.1536.832/0.0.1920.1040@1920.1.1536.832" timestamp="1621530884166" />
-    <state width="1515" height="210" key="GridCell.Tab.0.right" timestamp="1621530884166">
-      <screen x="1920" y="1" width="1536" height="832" />
+    <state width="1515" height="208" key="GridCell.Tab.0.left/0.0.1536.824/-1920.0.1920.1040@0.0.1536.824" timestamp="1634592862398" />
+    <state width="1515" height="208" key="GridCell.Tab.0.right" timestamp="1634592862398">
+      <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1498" height="210" key="GridCell.Tab.0.right/1920.1.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1621522629868" />
-    <state width="1515" height="210" key="GridCell.Tab.0.right/1920.1.1536.832/0.0.1920.1040@1920.1.1536.832" timestamp="1621530884166" />
-    <state width="1498" height="261" key="GridCell.Tab.1.bottom" timestamp="1621519350495">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state width="1498" height="261" key="GridCell.Tab.1.bottom/1920.1.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1621519350495" />
-    <state width="1498" height="261" key="GridCell.Tab.1.center" timestamp="1621519350495">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state width="1498" height="261" key="GridCell.Tab.1.center/1920.1.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1621519350495" />
-    <state width="1498" height="261" key="GridCell.Tab.1.left" timestamp="1621519350495">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state width="1498" height="261" key="GridCell.Tab.1.left/1920.1.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1621519350495" />
-    <state width="1498" height="261" key="GridCell.Tab.1.right" timestamp="1621519350495">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state width="1498" height="261" key="GridCell.Tab.1.right/1920.1.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1621519350495" />
+    <state width="1515" height="208" key="GridCell.Tab.0.right/0.0.1536.824/-1920.0.1920.1040@0.0.1536.824" timestamp="1634592862398" />
   </component>
 </project>

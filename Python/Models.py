@@ -12,18 +12,21 @@ import matplotlib.pyplot as plt
 from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2
 
 class ModelHandler:
-    def __init__(self, modelName="MobileNetV2.h5"):
+    def __init__(self, modelName="MobileNetV2.h5", createNewModel=False):
         fullName = modelName
-        if modelName.find(".h5") == -1:
-            fullName += ".h5"
-        self.model = keras.models.load_model("Models/"+fullName)
-        self.shape = self.model.input.shape[1]
-        img = np.zeros((self.shape, self.shape, 3), dtype=int)
-        #img = Image.fromarray(img)
-        #img = img_to_array(img)
-        img = img.reshape((1, img.shape[0], img.shape[1], img.shape[2]))
-        #az első predict lassú, emiatt a videó ne álljon le, mert nincsenek még betöltve az erőforrások
-        self.model.predict(img)
+        self.model = ""
+        self.shape = ""
+        if not createNewModel:
+            if modelName.find(".h5") == -1:
+                fullName += ".h5"
+            self.model = keras.models.load_model("Models/"+fullName)
+            self.shape = self.model.input.shape[1]
+            img = np.zeros((self.shape, self.shape, 3), dtype=int)
+            #img = Image.fromarray(img)
+            #img = img_to_array(img)
+            img = img.reshape((1, img.shape[0], img.shape[1], img.shape[2]))
+            #az első predict lassú, emiatt a videó ne álljon le, mert nincsenek még betöltve az erőforrások
+            self.model.predict(img)
         self.classes = {0: 'Speed limit (20km/h)',
                    1: 'Speed limit (30km/h)',
                    2: 'Speed limit (50km/h)',
@@ -207,7 +210,7 @@ class ModelHandler:
 
         model.summary()
         tensorboard = keras.callbacks.TensorBoard(log_dir="Models/logs/" + modelName, histogram_freq=1)
-        earlyStopping = keras.callbacks.EarlyStopping(monitor="val_accuracy", min_delta=0.0001, patience=10, mode="max")
+        earlyStopping = keras.callbacks.EarlyStopping(monitor="val_accuracy", min_delta=0.0001, patience=15, mode="max")
         model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
             filepath=filePath,
             save_weights_only=False,
@@ -216,7 +219,7 @@ class ModelHandler:
             save_best_only=True,
             verbose=1)
         with tf.device('/gpu:0'):
-            model.fit(train_data, validation_data=valid_data, epochs=50, callbacks=[tensorboard, earlyStopping, model_checkpoint_callback])
+            model.fit(train_data, validation_data=valid_data, epochs=200, callbacks=[tensorboard, earlyStopping, model_checkpoint_callback])
 
         #keras.models.save_model(filepath=filePath, model=model)
 
