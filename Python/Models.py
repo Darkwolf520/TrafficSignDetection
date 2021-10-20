@@ -78,7 +78,7 @@ class ModelHandler:
             print("SIZE PROBLEM: height: {0}, width: {1}".format(h, w))
             return self.get_noise_class()
         image = cv2.resize(image, (224, 224))
-        #image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
         image = Image.fromarray(image)
         my_image = img_to_array(image)
