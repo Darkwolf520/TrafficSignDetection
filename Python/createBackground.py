@@ -1,6 +1,10 @@
 import cv2
 import numpy as np
-
+from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
+from os import listdir
+from os.path import isfile, join
+import shutil
+import os
 
 class Annotation:
     def __init__(self, line):
@@ -114,6 +118,58 @@ def createBacgroundsFromImage(img, list_of_ground_trouth, img_size, step_size, t
           .format(total_count, ok_count, out_of_roi_count, contains_gt_count))
     return result_list
 
+
+def createFolders(new_set_location):
+    for folder_counter in range(43):
+        folder_num = createFileName("", folder_counter, extension="/")
+        new_folder_name = new_set_location + folder_num
+        os.mkdir(new_folder_name)
+
+
+def createAugmentedImages(min_samples_num, orig_set, new_set_location):
+    for folder_counter in range(43):
+        folder_num = createFileName("", folder_counter, extension="")
+        actual_folder = orig_set + str(folder_num) + "/"
+        destination_folder = new_set_location + str(folder_num) + "/"
+        files_in_folder = [f for f in listdir(actual_folder) if isfile(join(actual_folder, f))]
+
+        counter = 0
+        # for f in files_in_folder:
+        #     old_file = actual_folder + f
+        #     new_file_name = createFileName(destination_folder, counter)
+        #     shutil.copy(old_file, new_file_name)
+        #
+        #     counter += 1
+        while counter < min_samples_num:
+            for f in files_in_folder:
+                if counter >= min_samples_num:
+                    break
+                old_file = actual_folder + f
+                x = cv2.imread(old_file)
+                #img = load_img(old_file)
+                #x = img_to_array(img)
+                # Reshape the input image
+                x = x.reshape((1,) + x.shape)
+
+
+
+                datagen = ImageDataGenerator(rotation_range=20,
+                                            zoom_range=0.15,
+                                            width_shift_range=0.2,
+                                            height_shift_range=0.2,
+                                            shear_range=0.15,
+                                             )
+                for batch in datagen.flow(x, batch_size=1, ):
+                    file = batch[0]
+                    new_file_name = createFileName(destination_folder, counter)
+                    cv2.imwrite(new_file_name, file)
+                    break
+                counter += 1
+
+
+
+
+
 def isImageOutOfRoi(img_coords, h, top_roi_ratio, bottom_roi_ratio,threshold=0.2):
     img_top_coord = img_coords[1]
     img_bottom_coord = img_coords[3]
@@ -143,3 +199,14 @@ def isImageContainsGroundTrouth(img_coords, annotation_list, threshold=0.3):
             print(val)
             return True
     return False
+
+def createFileName(prefix, counter, number_of_zeros=5, extension=".ppm"):
+    result = prefix
+
+    num = number_of_zeros - len(str(counter))
+
+    for i in range(num):
+        result += "0"
+    result += str(counter) + extension
+    return result
+
