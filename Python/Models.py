@@ -10,12 +10,14 @@ import cv2
 from PIL import Image
 import matplotlib.pyplot as plt
 from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2
+import time
 
 class ModelHandler:
-    def __init__(self, modelName="MobileNetV2.h5", createNewModel=False):
+    def __init__(self, modelName="MobileNetV2_2.h5", createNewModel=False):
         fullName = modelName
         self.model = ""
         self.shape = ""
+        self.time_list= []
         if not createNewModel:
             if modelName.find(".h5") == -1:
                 fullName += ".h5"
@@ -28,54 +30,54 @@ class ModelHandler:
             #az első predict lassú, emiatt a videó ne álljon le, mert nincsenek még betöltve az erőforrások
             self.model.predict(img)
         self.classes = {0: 'Speed limit (20km/h)',
-                   1: 'Speed limit (30km/h)',
-                   2: 'Speed limit (50km/h)',
-                   3: 'Speed limit (60km/h)',
-                   4: 'Speed limit (70km/h)',
-                   5: 'Speed limit (80km/h)',
-                   6: 'End of speed limit (80km/h)',
-                   7: 'Speed limit (100km/h)',
-                   8: 'Speed limit (120km/h)',
-                   9: 'No passing',
-                   10: 'No passing veh over 3.5 tons',
-                   11: 'Right-of-way at intersection',
-                   12: 'Priority road',
-                   13: 'Yield',
-                   14: 'Stop',
-                   15: 'No vehicles',
-                   16: 'Veh > 3.5 tons prohibited',
-                   17: 'No entry',
-                   18: 'General caution',
-                   19: 'Dangerous curve left',
-                   20: 'Dangerous curve right',
-                   21: 'Double curve',
-                   22: 'Bumpy road',
-                   23: 'Slippery road',
-                   24: 'Road narrows on the right',
-                   25: 'Road work',
-                   26: 'Traffic signals',
-                   27: 'Pedestrians',
-                   28: 'Children crossing',
-                   29: 'Bicycles crossing',
-                   30: 'Beware of ice/snow',
-                   31: 'Wild animals crossing',
-                   32: 'End speed + passing limits',
-                   33: 'Turn right ahead',
-                   34: 'Turn left ahead',
-                   35: 'Ahead only',
-                   36: 'Go straight or right',
-                   37: 'Go straight or left',
-                   38: 'Keep right',
-                   39: 'Keep left',
-                   40: 'Roundabout mandatory',
-                   41: 'End of no passing',
-                   42: 'End no passing veh > 3.5 tons',
-                   43: 'Noise'}
+                        1: 'Speed limit (30km/h)',
+                        2: 'Speed limit (50km/h)',
+                        3: 'Speed limit (60km/h)',
+                        4: 'Speed limit (70km/h)',
+                        5: 'Speed limit (80km/h)',
+                        6: 'Speed limit (100km/h)',
+                        7: 'Speed limit (120km/h)',
+                        8: 'No passing',
+                        9: 'No passing veh over 3.5 tons',
+                        10: 'Right-of-way at intersection',
+                        11: 'Priority road',
+                        12: 'Yield',
+                        13: 'Stop',
+                        14: 'No vehicles',
+                        15: 'Veh > 3.5 tons prohibited',
+                        16: 'No entry',
+                        17: 'General caution',
+                        18: 'Dangerous curve left',
+                        19: 'Dangerous curve right',
+                        20: 'Double curve',
+                        21: 'Bumpy road',
+                        22: 'Slippery road',
+                        23: 'Road narrows on the right',
+                        24: 'Road work',
+                        25: 'Traffic signals',
+                        26: 'Pedestrians',
+                        27: 'Children crossing',
+                        28: 'Bicycles crossing',
+                        29: 'Beware of ice/snow',
+                        30: 'Wild animals crossing',
+                        31: 'Turn right ahead',
+                        32: 'Turn left ahead',
+                        33: 'Ahead only',
+                        34: 'Go straight or right',
+                        35: 'Go straight or left',
+                        36: 'Keep right',
+                        37: 'Keep left',
+                        38: 'Roundabout mandatory',
+                        39: 'Noise'}
+
+
+    def __del__(self):
+        avg = round(sum(self.time_list) / len(self.time_list), 3)
+        print("AVG prediction time: {0}".format(avg))
 
     def predict(self, image):
         h, w, c = image.shape
         if h == 0 or w == 0:
-            print("SIZE PROBLEM: height: {0}, width: {1}".format(h, w))
             return self.get_noise_class()
         image = cv2.resize(image, (224, 224))
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -88,7 +90,11 @@ class ModelHandler:
         # my_image = preprocess_input(my_image)
 
         # model.summary()
-        pred = self.model.predict(my_image)
+        start = time.time()
+        with tf.device('/gpu:0'):
+            pred = self.model.predict(my_image)
+        self.time_list.append(time.time()-start)
+        print(time.time() - start)
         class_name = self.get_class_by_id(np.argmax(pred))
         return class_name
 
@@ -97,10 +103,18 @@ class ModelHandler:
         return result_class
 
     def get_noise_class(self):
-        result = self.classes.get(len(self.classes)-1)
+        result = self.classes.get(len(self.classes) - 1)
         return result
 
+    def evaulate(self):
+        gen = ImageDataGenerator()
+        evaulate_set = gen.flow_from_directory("D:/myGTSRBV2/Final_Training/Images",
+                                                   target_size=(224, 224),
+                                                   batch_size=64,
+                                                   color_mode='rgb',)
 
+        result = self.model.evaluate(evaulate_set)
+        print(result)
 
     def create_new_model(self):
         physical_devices = tf.config.experimental.list_physical_devices('GPU')
@@ -292,6 +306,56 @@ class ModelHandler:
         model = Model(inputs=model.input, outputs=last)
         model.summary()
         keras.models.save_model(filepath="Models/" + modelName + ".h5", model=model)
+
+    def create_mobile_64(self, modelName):
+        model = MobileNetV2()
+        model.summary()
+        for l in model.layers[:113]:
+            l.trainable = False
+        print(model.layers[112].trainable)
+        print(model.layers[113].trainable)
+
+        tmp = model.layers[-2]
+        last = Dense(44, activation='softmax')(tmp.output)
+        model = Model(inputs=model.input, outputs=last)
+
+        train_gen = ImageDataGenerator(validation_split=0.2)
+
+        train_data = train_gen.flow_from_directory("D:/GTSRB/Final_Training/Images",
+                                                   target_size=(224, 224),
+                                                   batch_size=64,
+                                                   color_mode='rgb',
+                                                   subset="training")
+
+        valid_data = train_gen.flow_from_directory("D:/GTSRB/Final_Training/Images",
+                                                   target_size=(224, 224),
+                                                   batch_size=16,
+                                                   color_mode='rgb',
+                                                   subset="validation")
+
+
+        model.compile(loss='categorical_crossentropy',
+                      optimizer='adam',
+                      metrics=['accuracy'])
+
+        model.summary()
+
+        with tf.device('/gpu:0'):
+            model.fit(train_data, validation_data=valid_data, epochs=200)
+
+        """
+        model.add(Convolution2D(32, (3, 3), activation='relu', input_shape=(32, 32, 1)))
+        input = Dense(shape=(None, 64, 64, 3), name='image_input')
+        for l in mobileModel.layers[:113]:
+            l.trainable = False
+
+        tmp = mobileModel.layers[-2]
+        last = Dense(44, activation='softmax')(tmp.output)
+        model = Model(inputs=input, outputs=last)
+        model.summary()
+        keras.models.save_model(filepath="Models/" + modelName + ".h5", model=model)
+        """
+
 
 """
     def test_model(self):

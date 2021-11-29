@@ -7,6 +7,7 @@ from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2
 class Output:
     def __init__(self, image, edited_image):
         self.frame = image
+        self.annotations = []
         self.edited_frame = edited_image
         self.gray_img = np.empty((0, 0))
         self.red_mask_img = np.empty((0, 0))
@@ -23,6 +24,7 @@ class Output:
         self.detected_img = np.empty((0, 0))
         self.all_objects = []
         self.trackable_objects = []
+        self.IOU_list = []
         
     def get_not_noise_objects(self):
         objects = []
@@ -45,11 +47,11 @@ class Output:
         cv2.rectangle(self.detected_img, top_left, bottom_right, (0, 0, 255), 1)
 
     def draw_tracking_obj_on_detected_V2(self, top_left, bottom_right,sign_name):
-        cv2.rectangle(self.detected_img, top_left, bottom_right, (0, 255, 0), 1)
+        cv2.rectangle(self.detected_img, top_left, bottom_right, (255, 0, 0), 1)
         x = top_left[0]
         y = top_left[1]
         y -= 2
-        cv2.putText(self.detected_img, sign_name, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 255, 0), thickness=1)
+        cv2.putText(self.detected_img, sign_name, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 0, 0), thickness=1)
 
 
     def show_output_frames(self, original=False, gray=False, red_mask=False,

@@ -12,6 +12,7 @@ class Annotation:
         self.image_name = tmp[0]
         self.top_left = (int(tmp[1]), int(tmp[2]))
         self.bottom_right = (int(tmp[3]), int(tmp[4]))
+        self.coords = (int(tmp[1]), int(tmp[2]), int(tmp[3]), int(tmp[4]))
         self.sign_class = tmp[5]
 
 

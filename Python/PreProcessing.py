@@ -1,3 +1,5 @@
+import math
+
 import imutils
 import numpy as np
 from DomainModels import *
@@ -18,7 +20,7 @@ from concurrent.futures import ThreadPoolExecutor
 class PreProcessing:
     def __init__(self):
         self.modelHandler = Models.ModelHandler()
-        self.up_ratio = 0.25
+        self.up_ratio = 0.20
         self.bottom_ratio = 0.25
         self.apply_roi = True
         self.next_id = 0
@@ -30,59 +32,7 @@ class PreProcessing:
         self.original_image_height = 0
         self.original_image_width = 0
 
-    def detect(self, output_obj):
-        image = output_obj.frame.copy()
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        shapes = []
-
-        #color segmentation
-        red_image = self.segment_colors(image.copy(), Colors.red)
-        blue_image = self.segment_colors(image.copy(), Colors.blue)
-        yellow_image = self.segment_colors(image.copy(), Colors.yellow)
-
-        #contour detection by color masks
-        red_cnts = self.detect_contour(red_image)
-        blue_cnts = self.detect_contour(blue_image)
-        yellow_cnts = self.detect_contour(yellow_image)
-
-        #shape recognition
-        red_shapes = self.get_shapes_from_contours(red_cnts, Colors.red)
-        blue_shapes = self.get_shapes_from_contours(blue_cnts, Colors.blue)
-        yellow_shapes = self.get_shapes_from_contours(yellow_cnts, Colors.yellow)
-
-        #circle detection by masks
-        red_circles = self.detect_circle(red_image, Colors.red)
-        blue_circles = self.detect_circle(blue_image, Colors.blue)
-
-        shapes += red_circles
-        shapes += blue_circles
-        shapes += red_shapes
-        shapes += blue_shapes
-        shapes += yellow_shapes
-
-        for o in shapes:
-            self.crop_image(o, image.copy())
-
-        start = time.time()
-        for o in shapes:
-            self.recognise_object(o)
-        print("Recognision time: {0}".format(time.time()-start))
-
-        output_obj.gray_img = gray.copy()
-        output_obj.red_mask_img = red_image.copy()
-        output_obj.blue_mask_img = blue_image.copy()
-        output_obj.yellow_mask_img = yellow_image.copy()
-        output_obj.red_circles_objects = self.create_circle_image(image.copy(), red_circles)
-        output_obj.blue_circles_objects = self.create_circle_image(image.copy(), blue_circles)
-        output_obj.red_contours_img = self.draw_contours(red_cnts, image.copy())
-        output_obj.blue_contours_img = self.draw_contours(blue_cnts, image.copy())
-        output_obj.yellow_contours_img = self.draw_contours(yellow_cnts, image.copy())
-        output_obj.all_objects = shapes
-        output_obj.detected_img = self.show_results(shapes, image.copy())
-
-        return output_obj
-
-    def multithreading_detection(self, output_obj):
+    def multithreading_detection(self, output_obj, annotation_list= []):
         frame = output_obj.frame.copy()
 
         image = output_obj.edited_frame.copy()
@@ -115,16 +65,25 @@ class PreProcessing:
         start = time.time()
         for o in shapes:
             self.recognise_object(o)
-        print("Recognision time: {0}".format(time.time() - start))
+        #print("Recognision time: {0}".format(time.time() - start))
+
+        shapes = self.remove_noise_objects_after_classification(shapes)
 
         output_obj.gray_img = gray
         output_obj.all_objects = shapes
         output_obj.detected_img = self.show_results(shapes, frame.copy())
         for o in shapes:
-            if o.shape != Shapes.noise and o.sign_class_name != 'Noise':
-                trackable_object = TrackableSign(self.next_id, o)
-                self.next_id += 1
-                output_obj.trackable_objects.append(trackable_object)
+            trackable_object = TrackableSign(self.next_id, o)
+            self.next_id += 1
+            output_obj.trackable_objects.append(trackable_object)
+            if len(output_obj.annotations) != 0:
+                obj_coords = (o.real_coord_top_left[0], o.real_coord_top_left[1], o.real_coord_bottom_right[0], o.real_coord_bottom_right[1])
+                IOU = self.get_IOU(obj_coords, output_obj.annotations)
+                output_obj.IOU_list.append(IOU)
+        if len(output_obj.annotations) != 0 and len(output_obj.IOU_list) != 0:
+            output_obj.IOU_list = self.getBestXValuesFromList(len(output_obj.annotations), output_obj.IOU_list)
+
+
 
 
         return output_obj
@@ -168,17 +127,20 @@ class PreProcessing:
             output_obj.red_mask_filter_img = color_mask
             output_obj.red_circles_objects = self.create_circle_image(image.copy(), circles)
             output_obj.red_contours_img = self.draw_contours(cnts, image.copy())
+            pass
 
         if color == Colors.blue:
             output_obj.blue_mask_img = color_mask_orig
             output_obj.blue_mask_filter_img = color_mask
             output_obj.blue_circles_objects = self.create_circle_image(image.copy(), circles)
-           # output_obj.blue_contours_img = self.draw_contours(cnts, image.copy())
+            output_obj.blue_contours_img = self.draw_contours(cnts, image.copy())
+            pass
 
         if color == Colors.yellow:
             output_obj.yellow_mask_img = color_mask_orig
             output_obj.yellow_mask_filter_img = color_mask
             output_obj.yellow_contours_img = self.draw_contours(cnts, image.copy())
+            pass
 
         return color_shapes
 
@@ -225,7 +187,7 @@ class PreProcessing:
 
     def is_noise_circle(self, circle):
         if int(circle[2]* circle[2] *3.14)/self.edited_image_area > self.edited_max_area_ratio:
-            print(int(circle[2]* circle[2] *3.14)/self.edited_image_area)
+            #print(int(circle[2]* circle[2] *3.14)/self.edited_image_area)
             return True
 
         if int(circle[2]* circle[2] *3.14)/self.edited_image_area < self.edited_min_area_ratio:
@@ -296,10 +258,8 @@ class PreProcessing:
         if shape == Shapes.noise:
             return True
         if (area/self.edited_image_area) > self.edited_max_area_ratio:
-            print(area/self.edited_image_area)
             return True
         if (area/self.edited_image_area) < self.edited_min_area_ratio:
-            print((area/self.edited_image_area))
             return True
         if color == Colors.red and shape == Shapes.square:
             return True
@@ -317,7 +277,7 @@ class PreProcessing:
     def define_coords(self, o):
         bias = 5
         if o.color == Colors.yellow:
-            bias = 25
+            bias = 15
         if o.shape == Shapes.circle:
             h_up = int(o.area[1] - o.area[2]) - bias
             h_bottom = int(o.area[1] + o.area[2]) + bias
@@ -358,7 +318,6 @@ class PreProcessing:
             h, w, c = o.image.shape
             if h == 0 or w == 0:
                 o.shape = Shapes.noise
-                print("contour crop failed")
 
         elif o.shape == Shapes.circle:
             x = o.coord_top_left[0]
@@ -372,7 +331,6 @@ class PreProcessing:
             h, w, c = o.image.shape
             if h == 0 or w == 0:
                 o.shape = Shapes.noise
-                print("circle crop failed")
         elif o.shape == Shapes.noise:
             pass
         else:
@@ -382,25 +340,27 @@ class PreProcessing:
     def segment_colors(self, image, color):
         hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
         if color == Colors.red:
-            color_lower = np.array([160, 70, 70])
+            color_lower = np.array([160, 70, 100])
             color_upper = np.array([180, 255, 255])
-            color_lower2 = np.array([0, 70, 70])
-            color_upper2 = np.array([15, 255, 255])
+            color_lower2 = np.array([0, 70, 100])
+            color_upper2 = np.array([7, 255, 255])
             mask = cv2.inRange(hsv_image, color_lower, color_upper)
             mask2 = cv2.inRange(hsv_image, color_lower2, color_upper2)
             mask = cv2.bitwise_or(mask, mask2)
             return mask
 
         if color == Colors.blue:
-            color_lower = np.array([95, 100, 100])
+            color_lower = np.array([90, 150, 100])
             color_upper = np.array([125, 255, 255])
             mask = cv2.inRange(hsv_image, color_lower, color_upper)
             return mask
 
         if color == Colors.yellow:
-            color_lower = np.array([15, 160, 160])
-            color_upper = np.array([30, 255, 255])
+            color_lower = np.array([20, 160, 200])
+            color_upper = np.array([35, 255, 255])
+
             mask = cv2.inRange(hsv_image, color_lower, color_upper)
+
             return mask
 
         raise ValueError("Unable to segment color: {0}".format(color))
@@ -449,7 +409,7 @@ class PreProcessing:
             o.real_coord_bottom_right = (x2, y2)
             #self.real_coord_top_left = (0, 0)
             #self.real_coord_bottom_right = (0, 0)
-            cv2.rectangle(image, (x, y), (x2, y2), color, thickness=1)
+            cv2.rectangle(image, o.real_coord_top_left, o.real_coord_bottom_right, color, thickness=1)
             y -= 2
             cv2.putText(image, o.sign_class_name, (x, y)
                         , cv2.FONT_HERSHEY_PLAIN, 1, color, thickness=2)
@@ -517,3 +477,45 @@ class PreProcessing:
                 result.append(circle)
         return result
 
+    def get_IOU(self, obj_coords, annotation_coords_list):
+        result = 0
+        for ann in annotation_coords_list:
+            tmp = self.IOU(obj_coords, ann.coords)
+            if tmp > result:
+                result = tmp
+
+        return result
+
+    def remove_noise_objects_after_classification(self, shapes):
+        result = []
+        for shape in shapes:
+            if shape.shape != Shapes.noise and shape.sign_class_name != 'Noise':
+                result.append(shape)
+        return result
+
+
+    def getBestXValuesFromList(self, num, list):
+        result = []
+        if len(list) <= num:
+            for i in range(len(list)):
+                result.append(list[i])
+
+            """
+                for i in range(num - len(list)):
+                result.append(0)
+            """
+        else:
+            for i in range(num):
+                tmp = max(list)
+                list.remove(tmp)
+                result.append(tmp)
+
+        return result
+
+    def gammaCorrection(sefl, src, gamma):
+        invGamma = 1 / gamma
+
+        table = [((i / 255) ** invGamma) * 255 for i in range(256)]
+        table = np.array(table, np.uint8)
+
+        return cv2.LUT(src, table)
