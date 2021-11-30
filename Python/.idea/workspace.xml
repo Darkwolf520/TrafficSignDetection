@@ -2,20 +2,67 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7e13e003-3192-4ae8-a8a7-d9f7e4384e79" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../Assets/01.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/02.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/03.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/04.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/05.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/06.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/1.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/2.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/3.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/4.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/5.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/6.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/7.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH10.mp4" beforeDir="false" afterPath="$PROJECT_DIR$/../Assets/SH10.mp4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH11.mp4" beforeDir="false" afterPath="$PROJECT_DIR$/../Assets/SH11.mp4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH12.mp4" beforeDir="false" afterPath="$PROJECT_DIR$/../Assets/SH12.mp4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH13.mp4" beforeDir="false" afterPath="$PROJECT_DIR$/../Assets/SH13.mp4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH14.mp4" beforeDir="false" afterPath="$PROJECT_DIR$/../Assets/SH14.mp4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH14_.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH15.mp4" beforeDir="false" afterPath="$PROJECT_DIR$/../Assets/SH15.mp4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH16.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH17.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH18.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH19.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH1_Trim.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH2.mp4" beforeDir="false" afterPath="$PROJECT_DIR$/../Assets/SH2.mp4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH20.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH21.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH22.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH23.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH24.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH2V2.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH3.mp4" beforeDir="false" afterPath="$PROJECT_DIR$/../Assets/SH3.mp4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH4.mp4" beforeDir="false" afterPath="$PROJECT_DIR$/../Assets/SH4.mp4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH5.mp4" beforeDir="false" afterPath="$PROJECT_DIR$/../Assets/SH5.mp4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH5_1_M.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH5_2_M.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH6.mp4" beforeDir="false" afterPath="$PROJECT_DIR$/../Assets/SH6.mp4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH6.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH7.mp4" beforeDir="false" afterPath="$PROJECT_DIR$/../Assets/SH7.mp4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH8.mp4" beforeDir="false" afterPath="$PROJECT_DIR$/../Assets/SH8.mp4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SH9.mp4" beforeDir="false" afterPath="$PROJECT_DIR$/../Assets/SH9.mp4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SK1.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SK10.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SK11.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SK2.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SK3.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SK4.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SK5.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SK6.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SK7.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SK8.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/SK9.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/images/curve_left/00001.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assets/images/curve_left/tmp.jpg" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models.py" beforeDir="false" afterPath="$PROJECT_DIR$/Models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/MobileNetV2.h5" beforeDir="false" afterPath="$PROJECT_DIR$/Models/MobileNetV2.h5" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/first.h5" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/logs/second/train/events.out.tfevents.1622115679.DESKTOP-9MNFRV1.13100.201.v2" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/logs/second/train/events.out.tfevents.1622115704.DESKTOP-9MNFRV1.profile-empty" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/logs/second/train/plugins/profile/2021_05_27_11_41_44/DESKTOP-9MNFRV1.input_pipeline.pb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/logs/second/train/plugins/profile/2021_05_27_11_41_44/DESKTOP-9MNFRV1.kernel_stats.pb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/logs/second/train/plugins/profile/2021_05_27_11_41_44/DESKTOP-9MNFRV1.memory_profile.json.gz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/logs/second/train/plugins/profile/2021_05_27_11_41_44/DESKTOP-9MNFRV1.overview_page.pb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/logs/second/train/plugins/profile/2021_05_27_11_41_44/DESKTOP-9MNFRV1.tensorflow_stats.pb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/logs/second/train/plugins/profile/2021_05_27_11_41_44/DESKTOP-9MNFRV1.trace.json.gz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/logs/second/train/plugins/profile/2021_05_27_11_41_44/DESKTOP-9MNFRV1.xplane.pb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/second.h5" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -83,42 +130,42 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state width="1502" height="207" key="GridCell.Tab.0.bottom" timestamp="1638217390615">
+    <state width="1515" height="208" key="GridCell.Tab.0.bottom" timestamp="1638303179322">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1502" height="207" key="GridCell.Tab.0.bottom/0.0.1536.824/-1920.0.1920.1040@0.0.1536.824" timestamp="1638217390615" />
+    <state width="1515" height="208" key="GridCell.Tab.0.bottom/0.0.1536.824/-1920.0.1920.1040@0.0.1536.824" timestamp="1638303179322" />
     <state width="1515" height="211" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1638014529321" />
-    <state width="1502" height="207" key="GridCell.Tab.0.center" timestamp="1638217390615">
+    <state width="1515" height="208" key="GridCell.Tab.0.center" timestamp="1638303179322">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1502" height="207" key="GridCell.Tab.0.center/0.0.1536.824/-1920.0.1920.1040@0.0.1536.824" timestamp="1638217390615" />
+    <state width="1515" height="208" key="GridCell.Tab.0.center/0.0.1536.824/-1920.0.1920.1040@0.0.1536.824" timestamp="1638303179322" />
     <state width="1515" height="211" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1638014529321" />
-    <state width="1502" height="207" key="GridCell.Tab.0.left" timestamp="1638217390615">
+    <state width="1515" height="208" key="GridCell.Tab.0.left" timestamp="1638303179322">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1502" height="207" key="GridCell.Tab.0.left/0.0.1536.824/-1920.0.1920.1040@0.0.1536.824" timestamp="1638217390615" />
+    <state width="1515" height="208" key="GridCell.Tab.0.left/0.0.1536.824/-1920.0.1920.1040@0.0.1536.824" timestamp="1638303179322" />
     <state width="1515" height="211" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1638014529321" />
-    <state width="1502" height="207" key="GridCell.Tab.0.right" timestamp="1638217390615">
+    <state width="1515" height="208" key="GridCell.Tab.0.right" timestamp="1638303179322">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1502" height="207" key="GridCell.Tab.0.right/0.0.1536.824/-1920.0.1920.1040@0.0.1536.824" timestamp="1638217390615" />
+    <state width="1515" height="208" key="GridCell.Tab.0.right/0.0.1536.824/-1920.0.1920.1040@0.0.1536.824" timestamp="1638303179322" />
     <state width="1515" height="211" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1638014529321" />
-    <state width="1502" height="203" key="GridCell.Tab.1.bottom" timestamp="1638214180776">
+    <state width="1502" height="203" key="GridCell.Tab.1.bottom" timestamp="1638223017649">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1502" height="203" key="GridCell.Tab.1.bottom/0.0.1536.824/-1920.0.1920.1040@0.0.1536.824" timestamp="1638214180776" />
-    <state width="1502" height="203" key="GridCell.Tab.1.center" timestamp="1638214180776">
+    <state width="1502" height="203" key="GridCell.Tab.1.bottom/0.0.1536.824/-1920.0.1920.1040@0.0.1536.824" timestamp="1638223017649" />
+    <state width="1502" height="203" key="GridCell.Tab.1.center" timestamp="1638223017649">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1502" height="203" key="GridCell.Tab.1.center/0.0.1536.824/-1920.0.1920.1040@0.0.1536.824" timestamp="1638214180776" />
-    <state width="1502" height="203" key="GridCell.Tab.1.left" timestamp="1638214180775">
+    <state width="1502" height="203" key="GridCell.Tab.1.center/0.0.1536.824/-1920.0.1920.1040@0.0.1536.824" timestamp="1638223017649" />
+    <state width="1502" height="203" key="GridCell.Tab.1.left" timestamp="1638223017649">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1502" height="203" key="GridCell.Tab.1.left/0.0.1536.824/-1920.0.1920.1040@0.0.1536.824" timestamp="1638214180775" />
-    <state width="1502" height="203" key="GridCell.Tab.1.right" timestamp="1638214180776">
+    <state width="1502" height="203" key="GridCell.Tab.1.left/0.0.1536.824/-1920.0.1920.1040@0.0.1536.824" timestamp="1638223017649" />
+    <state width="1502" height="203" key="GridCell.Tab.1.right" timestamp="1638223017649">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1502" height="203" key="GridCell.Tab.1.right/0.0.1536.824/-1920.0.1920.1040@0.0.1536.824" timestamp="1638214180776" />
+    <state width="1502" height="203" key="GridCell.Tab.1.right/0.0.1536.824/-1920.0.1920.1040@0.0.1536.824" timestamp="1638223017649" />
     <state x="277" y="57" key="SettingsEditor" timestamp="1636756862406">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
