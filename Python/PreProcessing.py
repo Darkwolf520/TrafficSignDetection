@@ -374,7 +374,10 @@ class PreProcessing:
 
     def recognise_object(self, sign):
         if sign.shape != Shapes.noise:
-            sign.sign_class_name = self.modelHandler.predict(sign.image)
+            tmp = self.modelHandler.predict(sign.image)
+            sign.sign_class_name = tmp[0]
+            sign.sign_class_id = tmp[1]
+            sign.top3 = tmp[2]
         else:
             sign.sign_class_name = self.modelHandler.get_noise_class()
 

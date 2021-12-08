@@ -77,6 +77,7 @@ class ModelHandler:
 
     def predict(self, image):
         h, w, c = image.shape
+        top_values_index = []
         if h == 0 or w == 0:
             return self.get_noise_class()
         image = cv2.resize(image, (224, 224))
@@ -93,10 +94,12 @@ class ModelHandler:
         start = time.time()
         with tf.device('/gpu:0'):
             pred = self.model.predict(my_image)
+            top_values_index = sorted(range(len(pred[0])), key=lambda i: pred[0, i])[-3:]
         self.time_list.append(time.time()-start)
         print(time.time() - start)
         class_name = self.get_class_by_id(np.argmax(pred))
-        return class_name
+        class_id = np.argmax(pred)
+        return [class_name, class_id, top_values_index]
 
     def get_class_by_id(self, id):
         result_class = self.classes.get(id)

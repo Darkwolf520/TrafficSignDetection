@@ -1,7 +1,8 @@
 import enum
 import cv2
 import numpy as np
-
+import pandas as pd
+from openpyxl import load_workbook
 
 class Colors(enum.Enum):
     undefined = 0
@@ -30,6 +31,8 @@ class Sign:
         self.sign_class_name = None
         self.real_coord_top_left = (0, 0)
         self.real_coord_bottom_right = (0, 0)
+        self.sign_class_id = None
+        self.top3 = []
 
     def get_bbox(self):
         #bbox = (x, y, width_from_coord, height_from_coord)
@@ -87,6 +90,109 @@ class TrackableSign:
             else:
                 self.state = TrackingStates.lost
             return success
+class predictionObject:
+    def __init__(self, groundTruth, predicted, top3):
+        self.groundTruth = groundTruth
+        self.predicted = predicted
+        self.top3 = top3
+        self.isCorrectClass = self.groundTruth == self.predicted
+        self.isCorrectCategory = False
+        self.isCorrectTop3 = False
+        if (0 <= groundTruth <= 9 or 14 <= groundTruth <= 15) and (0 <= predicted <= 9 or 14 <= predicted <= 15):
+            self.isCorrectCategory = True
+        elif (groundTruth == 10 or 17 <= groundTruth <= 30) and (predicted == 10 or 17 <= predicted <= 30):
+            self.isCorrectCategory = True
+        elif (31 <= groundTruth <= 38) and (31 <= predicted <= 38):
+            self.isCorrectCategory = True
+        elif (11 <= groundTruth <= 13 or groundTruth == 16) and (11 <= predicted <= 13 or predicted == 16):
+            self.isCorrectCategory = True
+        if top3[0] == groundTruth or top3[1] == groundTruth or top3[2] == groundTruth:
+            self.isCorrectTop3 = True
+
+
+class predictedResults:
+    def __init__(self, video_num):
+        self.predictions = []
+        self.matrix = np.zeros((39, 39))
+        self.video_num = video_num
+        self.top3_list = []
+        self.top1_list = []
+        self.category_list = []
+
+    def savePred(self, img, pred, top3):
+        cv2.imshow("detected_obj", img)
+        exit = False
+        key = ""
+        isSign = False
+        class_num = -1
+        while not exit:
+            try:
+                print("is traffic sign? enter/n")
+                key = cv2.waitKey()
+                if key == 13:
+                    class_num = int(input("GroundTruth: "))
+                    isSign = True
+                    print('saved')
+                    exit = True
+                elif key == ord("n"):
+                    exit = True
+                    print('saved')
+                else:
+                    raise()
+            except:
+                pass
+        cv2.destroyWindow("detected_obj")
+        if isSign:
+            self.addPred(class_num, pred, top3)
+
+    def addPred(self, groundTruth, predicted, top3):
+        val = 0
+        pred = predictionObject(groundTruth, predicted, top3)
+
+        if pred.isCorrectClass:
+            val = 1
+        self.top1_list.append(val)
+        val = 0
+        if pred.isCorrectCategory:
+            val = 1
+        self.category_list.append(val)
+        val = 0
+        if pred.isCorrectTop3:
+            val = 1
+        self.top3_list.append(val)
+
+
+
+
+        self.predictions.append(pred)
+
+        self.matrix[predicted, groundTruth] += 1
+
+    def __del__(self):
+        df1 = pd.DataFrame(self.matrix)
+        avg1 = round(sum(self.top1_list) / len(self.top1_list), 2)
+        avg3 = round(sum(self.top3_list) / len(self.top3_list), 2)
+        avg_cat = round(sum(self.category_list) / len(self.category_list), 2)
+
+        book = load_workbook('Results/matrix.xlsx')
+        writer = pd.ExcelWriter('Results/matrix.xlsx', engine='openpyxl')
+        writer.book = book
+
+        writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
+        df1.to_excel(writer, str(self.video_num))
+
+        df1 = pd.DataFrame([[avg1, avg3, avg_cat]])
+        df1.to_excel(writer, str(self.video_num), startrow=42)
+
+        writer.save()
+
+        #df1 = pd.DataFrame([[avg1, avg3, avg_cat]])
+        #df1.to_excel("Results/matrix.xlsx", sheet_name=self.video_num, startrow=42, startcol=0)
+        #print()
+
+    #def write_matrix(self):
+
+
 
 class TrackingStates(enum.Enum):
     init = 0,

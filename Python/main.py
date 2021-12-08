@@ -3,12 +3,16 @@ import keras
 import PreProcessing
 import time
 import cv2
+
+from DomainModels import predictedResults
 from OutputHandler import Output, TrackingStates
 import glob
 from createBackground import Annotation
 from createBackground import createFileName
 import os
 import json
+import pandas as pd
+import numpy as np
 
 def test_all_GTSDB_images():
     default_path = "D:/FullIJCNN2013"
@@ -81,7 +85,7 @@ def test_image(resolution = (0, 0), img_path="Test/maps_istvan.png", saveResult=
 
 
 
-def test_video(resolution=(0, 0), video="Test/video.mp4", multithreading=True, isTracking= True, annotation_path=None):
+def test_video(resolution=(0, 0), video="Test/video.mp4", video_num=-1, isTracking= True, annotation_path=None):
     speedUp = 1
     speedUpCounter = 0
     slowmo = 1
@@ -95,6 +99,7 @@ def test_video(resolution=(0, 0), video="Test/video.mp4", multithreading=True, i
     Annotation = None
     IOU_values = []
     annotation_list = []
+    pred = predictedResults(video_num)
     while cap.isOpened():
         ret, frame = cap.read()
         if ret and speedUp == speedUpCounter + 1:
@@ -162,6 +167,9 @@ def test_video(resolution=(0, 0), video="Test/video.mp4", multithreading=True, i
                                           blue_contours=show_blue_contours,
                                           yellow_contours=show_yellow_contours, detected=show_result,
                                           objects=show_all_objects, recognised_objects=show_recognised_objects)
+
+            for item in output_obj.all_objects:
+                pred.savePred(item.image, item.sign_class_id, item.top3)
 
             end = time.time()
             fps = round(1/(end-t), 2)
@@ -289,5 +297,6 @@ show_recognised_objects = False
 
 if __name__ == '__main__':
 
-    file = "SH8"
-    test_video(isTracking=False, video="../Assets/{0}.mp4".format(file))
+    file_num = 1
+    test_video(isTracking=False, video="../Assets/SH{0}.mp4".format(file_num), video_num=file_num)
+
