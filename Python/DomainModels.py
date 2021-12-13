@@ -169,22 +169,29 @@ class predictedResults:
         self.matrix[predicted, groundTruth] += 1
 
     def __del__(self):
-        df1 = pd.DataFrame(self.matrix)
-        avg1 = round(sum(self.top1_list) / len(self.top1_list), 2)
-        avg3 = round(sum(self.top3_list) / len(self.top3_list), 2)
-        avg_cat = round(sum(self.category_list) / len(self.category_list), 2)
+        ok = False
+        while not ok:
+            try:
+                df1 = pd.DataFrame(self.matrix)
+                avg1 = str(round(sum(self.top1_list) / len(self.top1_list), 4) * 100) + "%"
+                avg3 = str(round(sum(self.top3_list) / len(self.top3_list), 4) * 100) + "%"
+                avg_cat = str(round(sum(self.category_list) / len(self.category_list), 4) * 100) + "%"
 
-        book = load_workbook('Results/matrix.xlsx')
-        writer = pd.ExcelWriter('Results/matrix.xlsx', engine='openpyxl')
-        writer.book = book
+                book = load_workbook('Results/matrix.xlsx')
+                writer = pd.ExcelWriter('Results/matrix.xlsx', engine='openpyxl')
+                writer.book = book
 
-        writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
-        df1.to_excel(writer, str(self.video_num))
+                writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
+                df1.to_excel(writer, str(self.video_num))
 
-        df1 = pd.DataFrame([[avg1, avg3, avg_cat]])
-        df1.to_excel(writer, str(self.video_num), startrow=42)
+                df1 = pd.DataFrame([[avg1, avg3, avg_cat]])
+                df1.to_excel(writer, str(self.video_num), startrow=42)
 
-        writer.save()
+                writer.save()
+                ok = True
+            except:
+                input('press enter to retry save matrix')
+
 
         #df1 = pd.DataFrame([[avg1, avg3, avg_cat]])
         #df1.to_excel("Results/matrix.xlsx", sheet_name=self.video_num, startrow=42, startcol=0)

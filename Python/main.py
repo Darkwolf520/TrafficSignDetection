@@ -99,7 +99,9 @@ def test_video(resolution=(0, 0), video="Test/video.mp4", video_num=-1, isTracki
     Annotation = None
     IOU_values = []
     annotation_list = []
-    pred = predictedResults(video_num)
+    pred = ""
+    if video_num != -1:
+        pred = predictedResults(video_num)
     while cap.isOpened():
         ret, frame = cap.read()
         if ret and speedUp == speedUpCounter + 1:
@@ -167,9 +169,9 @@ def test_video(resolution=(0, 0), video="Test/video.mp4", video_num=-1, isTracki
                                           blue_contours=show_blue_contours,
                                           yellow_contours=show_yellow_contours, detected=show_result,
                                           objects=show_all_objects, recognised_objects=show_recognised_objects)
-
-            for item in output_obj.all_objects:
-                pred.savePred(item.image, item.sign_class_id, item.top3)
+            if video_num != -1:
+                for item in output_obj.all_objects:
+                    pred.savePred(item.image, item.sign_class_id, item.top3)
 
             end = time.time()
             fps = round(1/(end-t), 2)
@@ -297,6 +299,6 @@ show_recognised_objects = False
 
 if __name__ == '__main__':
 
-    file_num = 1
-    test_video(isTracking=False, video="../Assets/SH{0}.mp4".format(file_num), video_num=file_num)
+    file_num = 14
+    test_video(isTracking=False, video="../Assets/SH{0}.mp4".format(file_num))
 
